@@ -93,19 +93,21 @@ export async function refineHypothesis(currentHtml, instruction, context) {
     console.log('[VEXT API] Refining...', { instruction });
     const url = `${API_BASE}/.netlify/functions/analyze`;
 
-    // Detect if the message is potentially just chat to tip off the AI
-    const looksConversational = !/cambia|pon|quita|color|estilo|añade|borra|layout|diseño|web|seccion/i.test(instruction);
+    // Detect if the message is purely conversational (no design intent)
+    const looksConversational = !/cambia|pon|quita|color|estilo|añade|borra|layout|diseño|web|seccion|boton|font|fuente|texto|imagen|padding|margin|grid|flex/i.test(instruction);
 
     const response = await fetchWithRetry(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            hypothesis: instruction, // Treated as instruction in refine mode
+            hypothesis: instruction,
             mode: 'refine',
-            currentHtml,
+            // OPTIMIZATION: If it's just chat, don't send the heavy HTML context to the LLM
+            currentHtml: looksConversational ? "" : currentHtml,
             context,
+            is_chat_only: looksConversational,
             system_prompt_addon: looksConversational
-                ? "SPEED MODE: User is just chatting. Respond ONLY with chat_response. DO NOT generate or return the landing_page object. Be ultra-fast."
+                ? "EXTREME SPEED MODE: User is just chatting. DO NOT analyze code. DO NOT return landing_page. Return ONLY a concise chat_response. No JSON bloat."
                 : "OPTIMIZED GENERATION: Only change what is requested. Keep HTML concise."
         })
     });
@@ -119,16 +121,16 @@ export async function refineHypothesis(currentHtml, instruction, context) {
     const newGradePercent = data.analysis?.grade || context.gradePercent;
 
     return {
-        // Merge with existing data structure where possible
-        grade: calculateGradeLetter(newGradePercent), // FIX: Always return letter
+        grade: calculateGradeLetter(newGradePercent),
         gradePercent: newGradePercent,
         gradeExplanation: data.analysis?.grade_explanation || context.gradeExplanation,
-        chatResponse: data.chat_response || 'Cambios aplicados con éxito.',
+        chatResponse: data.chat_response || (looksConversational ? '¿En qué puedo ayudarte con tu proyecto?' : 'Cambios aplicados con éxito.'),
+        // Keep old preview if AI didn't return a new one (common in speed mode)
         websitePreview: data.landing_page && data.landing_page.tailwind_html ? {
             title: data.landing_page.headline || context.title,
             tagline: data.landing_page.subheadline || context.tagline,
             html: injectPreviewStyles(data.landing_page.tailwind_html)
-        } : context.websitePreview // FIX: Keep old preview if AI didn't return a new one
+        } : context.websitePreview
     };
 }
 
