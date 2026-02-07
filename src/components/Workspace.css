@@ -630,6 +630,16 @@
     /* Even wider on large desktop screens if needed for "less compact" feel */
     .phone-frame-large {
         width: 400px;
+        height: 850px;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .phone-frame-large .phone-screen {
+        flex: 1;
+        min-height: 0;
+        /* Allow flex shrink */
     }
 }
 
