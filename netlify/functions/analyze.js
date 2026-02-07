@@ -98,39 +98,38 @@ exports.handler = async (event, context) => {
         }
 
         // Call Gemini 2.0 Flash API
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    contents: [
-                        {
-                            parts: [
-                                {
-                                    text: `${VEXT_SYSTEM_PROMPT}\n\n---\n\nAnalyze this business hypothesis and generate the full VEXT strategy:\n\n"${hypothesis}"`
-                                }
-                            ]
-                        }
-                    ],
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 8192,
-                        responseMimeType: "application/json"
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
+        console.log('Calling Gemini:', geminiUrl.replace(GEMINI_API_KEY, 'KEY_HIDDEN'));
+
+        const response = await fetch(geminiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contents: [
+                    {
+                        parts: [
+                            {
+                                text: `${VEXT_SYSTEM_PROMPT}\n\n---\n\nAnalyze this business hypothesis and generate the full VEXT strategy:\n\n"${hypothesis}"`
+                            }
+                        ]
                     }
-                })
-            }
-        );
+                ],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 8192
+                }
+            })
+        });
 
         if (!response.ok) {
             const errorData = await response.text();
-            console.error('Gemini API error:', errorData);
+            console.error('Gemini API error:', response.status, errorData);
             return {
                 statusCode: 502,
                 headers,
-                body: JSON.stringify({ error: 'AI service error', details: response.status })
+                body: JSON.stringify({ error: 'AI service error', status: response.status, geminiError: errorData })
             };
         }
 
