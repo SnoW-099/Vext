@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, Calendar, ArrowRight } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { projectService } from '../services/projectService';
 import './Dashboard.css';
 
 function Dashboard({ onNewProject, onLoadProject }) {
+    const { category } = useParams();
+    const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
-    const [activeCategory, setActiveCategory] = useState('TODOS');
     const [bootText, setBootText] = useState('');
     const fullBootText = "> VEXT_SYSTEM_BOOT: READY...\n> WAITING_FOR_HYPOTHESIS..._";
-
-    const CATEGORIES = ['TODOS', 'SAAS', 'E-COMMERCE', 'APP MÓVIL', 'MARKETPLACE'];
 
     useEffect(() => {
         const loadProjects = () => {
@@ -18,27 +18,79 @@ function Dashboard({ onNewProject, onLoadProject }) {
         loadProjects();
     }, []);
 
-    // ... (rest of useEffect for boot text remains same) ...
+    useEffect(() => {
+        if (projects.length === 0) {
+            let i = 0;
+            const interval = setInterval(() => {
+                setBootText(fullBootText.slice(0, i));
+                i++;
+                if (i > fullBootText.length) clearInterval(interval);
+            }, 50);
+            return () => clearInterval(interval);
+        }
+    }, [projects.length]);
 
-    const filteredProjects = activeCategory === 'TODOS'
+    const normalizeCategory = (cat) => cat?.toUpperCase().replace('-', ' ') || 'TODOS';
+    const currentCategory = normalizeCategory(category);
+
+    const getProjectCategory = (id) => {
+        const categories = ['SAAS', 'E-COMMERCE', 'APP MÓVIL', 'MARKETPLACE'];
+        const charCode = id.toString().charCodeAt(0) || 0;
+        return categories[(charCode + 1) % categories.length];
+    };
+
+    const filteredProjects = currentCategory === 'TODOS'
         ? projects
-        : projects.filter(p => getProjectCategory(p.id) === activeCategory);
+        : projects.filter(p => getProjectCategory(p.id).toUpperCase() === currentCategory);
 
-    // ... (format functions remain same) ...
+    const handleDelete = (e, id) => {
+        e.stopPropagation();
+        if (confirm('¿Borrar este proyecto?')) {
+            projectService.delete(id);
+            setProjects(prev => prev.filter(p => p.id !== id));
+        }
+    };
 
-    const CategoryTabs = () => (
-        <div className="category-tabs-container">
-            <div className="category-tabs">
-                {CATEGORIES.map(cat => (
-                    <button
-                        key={cat}
-                        className={`category-tab ${activeCategory === cat ? 'active' : ''}`}
-                        onClick={() => setActiveCategory(cat)}
-                    >
-                        <span className="tab-text mono">{cat}</span>
-                        {activeCategory === cat && <div className="tab-indicator" />}
-                    </button>
-                ))}
+    const formatDate = (isoString) => {
+        return new Date(isoString).toLocaleDateString('es-ES', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    const formatProjectId = (id) => {
+        if (!id) return 'ID_000';
+        const num = id.toString().replace(/\D/g, '').slice(0, 3).padEnd(3, '0');
+        return `ID_${num}`;
+    };
+
+    const getProjectGradeLabel = (grade) => {
+        if (!grade) return 'PENDIENTE';
+        return `GRADO ${grade}`;
+    };
+
+    const successRate = projects.length > 0
+        ? Math.round((projects.filter(p => p.grade === 'A' || p.grade === 'B').length / projects.length) * 100)
+        : 0;
+
+    const StatsBar = () => (
+        <div className="stats-bar animate-slide-down">
+            <div className="stat-item">
+                <span className="stat-label">PROYECTOS ACTIVOS</span>
+                <span className="stat-value">{projects.length}</span>
+            </div>
+            <div className="stat-item">
+                <span className="stat-label">TASA DE ÉXITO</span>
+                <span className="stat-value">{successRate}%</span>
+            </div>
+            <div className="stat-item">
+                <span className="stat-label">ESTADO IA</span>
+                <div className="status-indicator">
+                    <div className="status-dot"></div>
+                    <span className="stat-value-text">ONLINE</span>
+                </div>
             </div>
         </div>
     );
@@ -58,10 +110,8 @@ function Dashboard({ onNewProject, onLoadProject }) {
             <main className="dashboard-content">
                 {projects.length > 0 ? (
                     <>
-                        <CategoryTabs />
                         <div className="projects-grid">
-                            {/* New Project CTA - Only in 'TODOS' or every tab? User said "each section has its tab", let's keep CTA in 'TODOS' */}
-                            {activeCategory === 'TODOS' && (
+                            {(!category || currentCategory === 'TODOS') && (
                                 <div
                                     className="project-card new-project-cta animate-scale-in"
                                     onClick={onNewProject}
@@ -76,7 +126,6 @@ function Dashboard({ onNewProject, onLoadProject }) {
                                 </div>
                             )}
 
-                            {/* Content Cards (Filtered Projects) */}
                             {filteredProjects.map((project, index) => (
                                 <div
                                     key={project.id}

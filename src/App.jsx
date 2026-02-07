@@ -10,7 +10,11 @@ const USE_MOCK_API = import.meta.env.DEV && !import.meta.env.VITE_USE_REAL_API
 
 import Dashboard from './components/Dashboard'
 
+import { Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom'
+
 function App() {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [stage, setStage] = useState('dashboard') // 'dashboard' | 'entry' | 'loading' | 'results' | 'transition'
   const [targetStage, setTargetStage] = useState(null)
   const [hypothesis, setHypothesis] = useState('')
@@ -18,6 +22,16 @@ function App() {
   const [currentProject, setCurrentProject] = useState(null)
   const [error, setError] = useState(null)
   const apiCallRef = useRef(null)
+
+  // Sync stage with URL for Dashboard
+  useEffect(() => {
+    if (location.pathname === '/' || location.pathname.length > 1) {
+      // If we are on a category path and not in a flow, show dashboard
+      if (stage !== 'entry' && stage !== 'loading' && stage !== 'results' && stage !== 'transition') {
+        setStage('dashboard')
+      }
+    }
+  }, [location.pathname, stage])
 
   const startTransition = (nextStage) => {
     setTargetStage(nextStage)
@@ -41,8 +55,6 @@ function App() {
   const handleLoadProject = (project) => {
     setCurrentProject(project)
     setHypothesis(project.hypothesis || '')
-    // Pass ALL project data to analysisData, not just a subset
-    // This fixes the missing 'targeting' bug
     setAnalysisData({ ...project })
     startTransition('results')
   }
@@ -52,8 +64,6 @@ function App() {
     setError(null)
     setStage('loading')
 
-    // Start API call in parallel with loading animation
-    console.log('[VEXT] Mode:', USE_MOCK_API ? 'MOCK' : 'REAL API')
     apiCallRef.current = USE_MOCK_API
       ? Promise.resolve(getMockAnalysis(inputHypothesis))
       : analyzeHypothesis(inputHypothesis)
@@ -61,14 +71,12 @@ function App() {
 
   const handleLoadingComplete = async () => {
     try {
-      // Wait for API call to complete
       const data = await apiCallRef.current
       setAnalysisData(data)
       setStage('results')
     } catch (err) {
       console.error('Analysis failed:', err)
       setError(err.message)
-      // Fall back to mock data on error
       setAnalysisData(getMockAnalysis(hypothesis))
       setStage('results')
     }
@@ -80,17 +88,31 @@ function App() {
     setCurrentProject(null)
     setError(null)
     apiCallRef.current = null
+    navigate('/')
     startTransition('dashboard')
   }
 
   return (
     <div className="app">
-      {stage === 'dashboard' && (
-        <Dashboard
-          onNewProject={handleNewProject}
-          onLoadProject={handleLoadProject}
-        />
-      )}
+      <Routes>
+        <Route path="/" element={
+          stage === 'dashboard' ? (
+            <Dashboard
+              onNewProject={handleNewProject}
+              onLoadProject={handleLoadProject}
+            />
+          ) : null
+        } />
+        <Route path="/:category" element={
+          stage === 'dashboard' ? (
+            <Dashboard
+              onNewProject={handleNewProject}
+              onLoadProject={handleLoadProject}
+            />
+          ) : null
+        } />
+      </Routes>
+
       {stage === 'entry' && (
         <EntryScreen onScan={handleScan} />
       )}
@@ -114,7 +136,7 @@ function App() {
           data={analysisData}
           onReset={handleReset}
           error={error}
-          currentProject={currentProject} // Pass project to workspace
+          currentProject={currentProject}
         />
       )}
     </div>
