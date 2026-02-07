@@ -133,8 +133,25 @@ exports.handler = async (event, context) => {
             }
 
             console.error('No models with generateContent capability found.');
+            return {
+                statusCode: 502,
+                headers,
+                body: JSON.stringify({
+                    error: 'All AI models failed',
+                    message: 'No compatible models found in auto-discovery.',
+                    debug_models: modelsData.models.map(m => ({ name: m.name, methods: m.supportedGenerationMethods }))
+                })
+            };
         } catch (autoError) {
             console.error('Auto-discovery failed:', autoError);
+            return {
+                statusCode: 502,
+                headers,
+                body: JSON.stringify({
+                    error: 'Auto-discovery error',
+                    message: autoError.message
+                })
+            };
         }
 
         return {
