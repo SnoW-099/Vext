@@ -89,8 +89,7 @@ function EntryScreen({ onScan }) {
                             onChange={(e) => setHypothesis(e.target.value)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleSubmit();
+                                    handleSubmit(e);
                                 }
                             }}
                         />
