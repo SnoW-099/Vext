@@ -370,12 +370,15 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                     <div className="stats-section">
                         <span className="section-label mono">PSYCHOLOGY TRIGGERS</span>
                         <div className="triggers-grid">
-                            {data?.psychology?.map((trigger, i) => (
-                                <div key={i} className="trigger-item">
-                                    <span className="trigger-dot" />
-                                    <span className="trigger-name">{trigger}</span>
-                                </div>
-                            ))}
+                            {data?.psychology?.map((item, i) => {
+                                const triggerText = typeof item === 'string' ? item : item.trigger;
+                                return (
+                                    <div key={i} className="trigger-item">
+                                        <span className="trigger-dot" />
+                                        <span className="trigger-name">{triggerText}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
 
