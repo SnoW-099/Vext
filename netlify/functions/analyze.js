@@ -74,12 +74,53 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const { hypothesis } = JSON.parse(event.body);
+        const { hypothesis, mode = 'create', currentHtml = '', context = {} } = JSON.parse(event.body);
         const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
         if (!GEMINI_API_KEY) {
             return { statusCode: 500, headers, body: JSON.stringify({ error: 'API key not configured' }) };
         }
+
+        // MODE: REFINE (Modify existing HTML)
+        if (mode === 'refine') {
+            const REFINE_PROMPT = `**ROLE:** Senior Frontend Engineer & Conversion Expert.
+**TASK:** Modify the provided Tailwind CSS HTML based on the user's instruction.
+**CONTEXT:** 
+- Current HTML: provided below.
+- Instruction: "${hypothesis}"
+- Business Context: ${JSON.stringify(context)}
+
+**RULES:**
+1. Keep the core structure unless asked to change.
+2. ONLY return the new HTML. No JSON wrapper (or wrapped in JSON if structure requires it, but let's stick to standard VEXT output format).
+3. Actually, to maintain consistency, return a JSON with "landing_page": { "tailwind_html": "..." } and a brief "analysis" of what changed.
+
+**OUTPUT JSON:**
+{
+  "analysis": {
+    "grade": ${context.grade || 50}, 
+    "grade_letter": "${context.grade_letter || 'C'}",
+    "psychology": [] 
+  },
+  "landing_page": {
+    "headline": "${context.title || ''}",
+    "subheadline": "${context.tagline || ''}",
+    "tailwind_html": "FULL_UPDATED_HTML"
+  }
+}
+`;
+
+            // Re-use callGemini but with specific prompt
+            try {
+                const refinement = await callGeminiWithPrompt(REFINE_PROMPT, currentHtml, GEMINI_API_KEY);
+                return { statusCode: 200, headers, body: JSON.stringify(refinement) };
+            } catch (error) {
+                console.error('Refinement failed:', error);
+                return { statusCode: 500, headers, body: JSON.stringify({ error: 'Refinement failed' }) };
+            }
+        }
+
+        // MODE: CREATE (Standard Logic) followed by existing code...
 
         // 1. Try Primary Model (Gemini 1.5 Flash)
         try {
@@ -210,6 +251,32 @@ async function callGemini(hypothesis, model, key) {
     const data = await response.json();
     const aiContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
+    if (!aiContent) throw new Error('Empty response');
+
+    const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/```\s*([\s\S]*?)\s*```/);
+    const jsonString = jsonMatch ? jsonMatch[1] : aiContent;
+    return JSON.parse(jsonString.trim());
+}
+
+async function callGeminiWithPrompt(systemPrompt, userContent, key) {
+    const model = 'gemini-1.5-flash'; // Use Flash for speed in chat
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            contents: [{ parts: [{ text: `${systemPrompt}\n\n---\n\nCONTENT TO MODIFY:\n${userContent}` }] }],
+            generationConfig: { temperature: 0.7, maxOutputTokens: 8192, responseMimeType: "application/json" }
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Refinement model failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const aiContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!aiContent) throw new Error('Empty response');
 
     const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/```\s*([\s\S]*?)\s*```/);

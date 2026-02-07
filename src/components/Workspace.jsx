@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './Workspace.css'
 import {
     Radar,
@@ -11,14 +11,74 @@ import {
     RotateCcw
 } from 'lucide-react'
 
-function Workspace({ hypothesis, data, onReset }) {
+import { refineHypothesis } from '../services/vextApi'
+
+function Workspace({ hypothesis, data: initialData, onReset }) {
+    const [data, setData] = useState(initialData)
     const [activePanel, setActivePanel] = useState(null)
     const [previewExpanded, setPreviewExpanded] = useState(false)
     const [mobilePage, setMobilePage] = useState('report') // 'report' | 'stats' | 'preview'
 
+    // Chat State
+    const [chatInput, setChatInput] = useState('')
+    const [chatHistory, setChatHistory] = useState([])
+    const [isRefining, setIsRefining] = useState(false)
+
+    // Update local data when props change (initial load)
+    useEffect(() => {
+        if (initialData) setData(initialData)
+    }, [initialData])
+
     const togglePanel = (panel) => {
         setActivePanel(activePanel === panel ? null : panel)
     }
+
+    const handleRefine = async () => {
+        if (!chatInput.trim() || isRefining) return;
+
+        const userMsg = { role: 'user', content: chatInput };
+        const loadingMsg = { role: 'ai', content: '', isLoading: true };
+
+        setChatHistory(prev => [...prev, userMsg, loadingMsg]);
+        setChatInput('');
+        setIsRefining(true);
+
+        try {
+            const context = {
+                grade: data.grade,
+                gradePercent: data.gradePercent,
+                title: data.websitePreview.title,
+                tagline: data.websitePreview.tagline
+            };
+
+            const refinedData = await refineHypothesis(
+                data.websitePreview.html,
+                userMsg.content,
+                context
+            );
+
+            // Update Workspace Data
+            setData(prev => ({
+                ...prev,
+                grade: refinedData.grade,
+                gradePercent: refinedData.gradePercent,
+                websitePreview: refinedData.websitePreview
+            }));
+
+            // Replace loading message with success
+            setChatHistory(prev => prev.map(msg =>
+                msg.isLoading ? { role: 'ai', content: `Refinement complete: ${refinedData.websitePreview.title}` } : msg
+            ));
+
+        } catch (error) {
+            console.error(error);
+            setChatHistory(prev => prev.map(msg =>
+                msg.isLoading ? { role: 'ai', content: 'Connection lost. Refinement failed.' } : msg
+            ));
+        } finally {
+            setIsRefining(false);
+        }
+    };
 
     return (
         <div className="workspace">
@@ -160,49 +220,64 @@ function Workspace({ hypothesis, data, onReset }) {
           DESKTOP: Center Terminal (always visible)
           ============================================ */}
             <main className="center-terminal desktop-only">
-                <div className="terminal-content">
-                    <div className="report-header mono">
-                        <span className="report-label">ANALYSIS COMPLETE</span>
-                        <span className="report-dot" />
-                    </div>
-
-                    <div className="report-body">
-                        <h1 className="report-title">{data?.websitePreview?.title || hypothesis}</h1>
-                        <p className="report-tagline">{data?.websitePreview?.tagline}</p>
-
-                        <div className="report-section">
-                            <span className="section-label mono">Strategy Overview</span>
-                            <p className="section-text">
-                                Your business concept has been analyzed against market trends, competitor positioning,
-                                and psychological conversion patterns. The generated landing page implements a
-                                high-conversion architecture optimized for your target demographic.
-                            </p>
-                        </div>
-
-                        <div className="report-section">
-                            <span className="section-label mono">Key Metrics</span>
-                            <div className="metrics-row">
-                                <div className="metric">
-                                    <span className="metric-value">{data?.grade}</span>
-                                    <span className="metric-label mono">GRADE</span>
+                <div className="chat-container">
+                    <div className="chat-messages">
+                        {/* Initial Analysis Message */}
+                        <div className="message ai">
+                            <div className="message-header">
+                                <span className="message-role">VEXT</span>
+                                <span className="message-time">Just now</span>
+                            </div>
+                            <div className="message-content">
+                                <h1 className="report-title">{data?.websitePreview?.title || hypothesis}</h1>
+                                <p className="report-tagline">{data?.websitePreview?.tagline}</p>
+                                <div className="report-section">
+                                    <span className="section-label mono">Strategy Overview</span>
+                                    <p className="section-text">
+                                        Your business concept has been analyzed against market trends, competitor positioning,
+                                        and psychological conversion patterns. The generated landing page implements a
+                                        high-conversion architecture optimized for your target demographic.
+                                    </p>
                                 </div>
-                                <div className="metric">
-                                    <span className="metric-value">{data?.psychology?.length || 0}</span>
-                                    <span className="metric-label mono">TRIGGERS</span>
-                                </div>
-                                <div className="metric">
-                                    <span className="metric-value">1</span>
-                                    <span className="metric-label mono">LANDING</span>
+                                <div className="metrics-row-small">
+                                    <span className="metric-tag grade">GRADE: {data?.grade}</span>
+                                    <span className="metric-tag">TRIGGERS: {data?.psychology?.length || 0}</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div className="terminal-hint mono">
-                    <span>← Explore panels</span>
-                    <span>•</span>
-                    <span>Preview →</span>
+                        {/* Chat History */}
+                        {chatHistory.map((msg, idx) => (
+                            <div key={idx} className={`message ${msg.role}`}>
+                                <div className="message-header">
+                                    <span className="message-role">{msg.role === 'user' ? 'USER' : 'VEXT'}</span>
+                                    <span className="message-time">Refinement</span>
+                                </div>
+                                <div className="message-content">
+                                    {msg.role === 'ai' && msg.isLoading ? (
+                                        <div className="typing-indicator mono">Running refinement protocols...</div>
+                                    ) : (
+                                        <p>{msg.content}</p>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="chat-input-area">
+                        <input
+                            type="text"
+                            className="chat-input"
+                            placeholder="Refine your strategy (e.g., 'Make it blue', 'Target gen-z')..."
+                            value={chatInput}
+                            onChange={(e) => setChatInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleRefine()}
+                            disabled={isRefining}
+                        />
+                        <button className="chat-send-btn" onClick={handleRefine} disabled={isRefining}>
+                            {isRefining ? <div className="spinner-small" /> : <ChevronRight size={20} />}
+                        </button>
+                    </div>
                 </div>
             </main>
 

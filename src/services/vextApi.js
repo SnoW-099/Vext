@@ -50,6 +50,38 @@ export async function analyzeHypothesis(hypothesis) {
     };
 }
 
+export async function refineHypothesis(currentHtml, instruction, context) {
+    console.log('[VEXT API] Starting refinement...', { instruction });
+    const url = `${API_BASE}/.netlify/functions/analyze`;
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            hypothesis: instruction, // Treated as instruction in refine mode
+            mode: 'refine',
+            currentHtml,
+            context
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Refinement Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+        // Merge with existing data structure where possible
+        grade: data.analysis?.grade || context.grade,
+        gradePercent: data.analysis?.grade || context.gradePercent,
+        websitePreview: {
+            title: data.landing_page?.headline || context.title,
+            tagline: data.landing_page?.subheadline || context.tagline,
+            html: data.landing_page?.tailwind_html ? injectPreviewStyles(data.landing_page.tailwind_html) : ''
+        }
+    };
+}
+
 // Fallback mock data for development without API
 export function getMockAnalysis(hypothesis) {
     return {
