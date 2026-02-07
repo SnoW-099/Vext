@@ -211,8 +211,23 @@ function injectPreviewStyles(html) {
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #444; }
-        body { overflow-x: hidden; }
+        body { overflow-x: hidden; scroll-behavior: smooth; }
     </style>
+    <script>
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a');
+            if (link) {
+                e.preventDefault();
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    const target = document.querySelector(href);
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Link disabled in preview mode.');
+                }
+            }
+        });
+    </script>
     `;
     return html.replace('</head>', `${styles}</head>`);
 }
