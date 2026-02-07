@@ -269,12 +269,38 @@ async function callGemini(hypothesis, model, key) {
 }
 
 async function callGeminiWithPrompt(systemPrompt, userContent, key) {
-    const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-pro'];
-
+    console.log('[REFINE] Starting auto-discovery for refinement...');
     console.log('[REFINE] User content length:', userContent?.length || 0);
 
-    for (const model of models) {
+    // First, discover what models are available
+    const modelsUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`;
+    const modelsResponse = await fetch(modelsUrl);
+    const modelsData = await modelsResponse.json();
+
+    if (!modelsData.models) {
+        throw new Error('Failed to list available models');
+    }
+
+    // Filter models that support generateContent
+    const validModels = modelsData.models.filter(m =>
+        m.supportedGenerationMethods &&
+        m.supportedGenerationMethods.includes('generateContent')
+    );
+
+    // Sort by preference (same logic as CREATE mode)
+    validModels.sort((a, b) => {
+        const scoreA = getModelScore(a.name);
+        const scoreB = getModelScore(b.name);
+        return scoreB - scoreA;
+    });
+
+    console.log('[REFINE] Found', validModels.length, 'valid models');
+
+    // Try each model until one works
+    for (const modelObj of validModels) {
+        const model = modelObj.name.replace(/^models\//, '');
         console.log('[REFINE] Trying model:', model);
+
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
 
         try {
@@ -288,23 +314,21 @@ async function callGeminiWithPrompt(systemPrompt, userContent, key) {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error(`[REFINE] Model ${model} failed:`, response.status, errorText.substring(0, 200));
-                continue; // Try next model
+                console.error(`[REFINE] Model ${model} failed:`, response.status);
+                continue;
             }
 
             const data = await response.json();
-            console.log('[REFINE] Got Gemini response from', model);
-
             const aiContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
             if (!aiContent) {
-                console.error('[REFINE] Empty AI response from', model);
-                continue; // Try next model
+                console.error('[REFINE] Empty response from', model);
+                continue;
             }
 
-            console.log('[REFINE] AI content preview:', aiContent.substring(0, 200));
+            console.log('[REFINE] Success with', model);
 
-            // Try to parse JSON
+            // Parse JSON
             const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/```\s*([\s\S]*?)\s*```/);
             const jsonString = jsonMatch ? jsonMatch[1] : aiContent;
 
@@ -312,11 +336,11 @@ async function callGeminiWithPrompt(systemPrompt, userContent, key) {
                 return JSON.parse(jsonString.trim());
             } catch (parseError) {
                 console.error('[REFINE] JSON parse failed:', parseError.message);
-                continue; // Try next model
+                continue;
             }
         } catch (fetchError) {
             console.error(`[REFINE] Fetch error with ${model}:`, fetchError.message);
-            continue; // Try next model
+            continue;
         }
     }
 
