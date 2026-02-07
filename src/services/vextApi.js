@@ -34,6 +34,8 @@ export async function analyzeHypothesis(hypothesis) {
     return {
         grade: data.analysis?.grade_letter || calculateGradeLetter(data.analysis?.grade),
         gradePercent: data.analysis?.grade || 65,
+        gradeExplanation: data.analysis?.grade_explanation || getGradeExplanation(data.analysis?.grade),
+        strategy: data.analysis?.strategy || "Project analyzed. Ready for refinement.",
         targeting: data.analysis?.target_audience || 'Target audience not defined.',
         psychology: data.analysis?.psychology?.map(p => p.trigger) || [],
         psychologyDetails: data.analysis?.psychology || [],
@@ -48,6 +50,15 @@ export async function analyzeHypothesis(hypothesis) {
         },
         raw: data // Keep raw response for debugging
     };
+}
+
+function getGradeExplanation(score) {
+    if (!score) return "Analysis incomplete.";
+    if (score >= 90) return "Exceptional potential. Minimal friction detected.";
+    if (score >= 80) return "Strong foundation with room for optimization.";
+    if (score >= 70) return "Valid concept but lacks differentiation.";
+    if (score >= 50) return "Significant risks detected in current model.";
+    return "Critical flaws in viability or execution.";
 }
 
 export async function refineHypothesis(currentHtml, instruction, context) {

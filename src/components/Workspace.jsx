@@ -220,7 +220,7 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                                 <div className="grade-bar">
                                     <div className="grade-fill" style={{ width: `${data?.gradePercent}%` }} />
                                 </div>
-                                <p className="grade-desc">High probability of market success based on competitive analysis and audience alignment.</p>
+                                <p className="grade-desc">{data?.gradeExplanation || "Analysis incomplete."}</p>
                             </div>
                         )}
 
