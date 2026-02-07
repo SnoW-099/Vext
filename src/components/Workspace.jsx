@@ -103,12 +103,38 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
             );
 
             // Update Workspace Data
-            setData(prev => ({
-                ...prev,
+            const nextData = {
+                ...data,
                 grade: refinedData.grade,
                 gradePercent: refinedData.gradePercent,
                 websitePreview: refinedData.websitePreview
-            }));
+            };
+            setData(nextData);
+
+            // AUTO-SAVE (Silent)
+            // We save directly here to ensure we use the fresh 'nextData'
+            // instead of waiting for state update or reusing handleSave (stale state)
+            try {
+                const projectToSave = {
+                    ...currentProject,
+                    id: projectId,
+                    hypothesis: hypothesis || nextData.websitePreview.title,
+                    grade: nextData.grade,
+                    gradePercent: nextData.gradePercent,
+                    gradeExplanation: nextData.gradeExplanation,
+                    strategy: nextData.strategy,
+                    websitePreview: nextData.websitePreview,
+                    psychology: nextData.psychologyDetails || nextData.psychology,
+                    targeting: nextData.targeting,
+                    updatedAt: new Date().toISOString()
+                };
+                const savedProject = projectService.save(projectToSave);
+                setProjectId(savedProject.id);
+                setHasUnsavedChanges(false);
+                // No chat notification for silent auto-save
+            } catch (err) {
+                console.error('Auto-save failed:', err);
+            }
 
             // Replace loading message with success
             setChatHistory(prev => prev.map(msg =>
