@@ -33,6 +33,10 @@ function LoadingScreen({ hypothesis, onComplete }) {
 
             if (elapsed >= totalDuration) {
                 clearInterval(interval)
+                // Haptic feedback for native app feel
+                if (navigator.vibrate) {
+                    navigator.vibrate([50, 30, 50])
+                }
                 setTimeout(onComplete, 300)
             }
         }, 50)
