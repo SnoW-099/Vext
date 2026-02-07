@@ -136,7 +136,18 @@ function Workspace({ hypothesis, data: initialData, onReset }) {
                 </nav>
 
                 <div className="rail-bottom">
-                    <button className="rail-icon subtle" onClick={onReset} title="New Scan">
+                    <button
+                        className={`rail-icon ${hasUnsavedChanges ? 'active' : 'subtle'}`}
+                        onClick={handleSave}
+                        title="Save Project"
+                    >
+                        {isSaving ? (
+                            <div className="spinner-small" style={{ width: 16, height: 16 }} />
+                        ) : (
+                            <Save size={18} strokeWidth={1.5} />
+                        )}
+                    </button>
+                    <button className="rail-icon subtle" onClick={onReset} title="Exit to Dashboard">
                         <RotateCcw size={16} strokeWidth={1.5} />
                     </button>
                 </div>

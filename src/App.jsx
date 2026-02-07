@@ -8,12 +8,35 @@ import { analyzeHypothesis, getMockAnalysis } from './services/vextApi'
 // Set to true for local dev without API, false for production
 const USE_MOCK_API = import.meta.env.DEV && !import.meta.env.VITE_USE_REAL_API
 
+import Dashboard from './components/Dashboard'
+
 function App() {
-  const [stage, setStage] = useState('entry') // 'entry' | 'loading' | 'results'
+  const [stage, setStage] = useState('dashboard') // 'dashboard' | 'entry' | 'loading' | 'results'
   const [hypothesis, setHypothesis] = useState('')
   const [analysisData, setAnalysisData] = useState(null)
+  const [currentProject, setCurrentProject] = useState(null)
   const [error, setError] = useState(null)
   const apiCallRef = useRef(null)
+
+  const handleNewProject = () => {
+    setStage('entry')
+    setHypothesis('')
+    setAnalysisData(null)
+    setCurrentProject(null)
+  }
+
+  const handleLoadProject = (project) => {
+    setCurrentProject(project)
+    setHypothesis(project.hypothesis || '')
+    setAnalysisData({
+      grade: project.grade,
+      gradePercent: project.gradePercent,
+      websitePreview: project.websitePreview,
+      psychology: project.psychology,
+      // reconstitute other data if needed
+    })
+    setStage('results')
+  }
 
   const handleScan = (inputHypothesis) => {
     setHypothesis(inputHypothesis)
@@ -43,15 +66,22 @@ function App() {
   }
 
   const handleReset = () => {
-    setStage('entry')
+    setStage('dashboard')
     setHypothesis('')
     setAnalysisData(null)
+    setCurrentProject(null)
     setError(null)
     apiCallRef.current = null
   }
 
   return (
     <div className="app">
+      {stage === 'dashboard' && (
+        <Dashboard
+          onNewProject={handleNewProject}
+          onLoadProject={handleLoadProject}
+        />
+      )}
       {stage === 'entry' && (
         <EntryScreen onScan={handleScan} />
       )}
@@ -67,6 +97,7 @@ function App() {
           data={analysisData}
           onReset={handleReset}
           error={error}
+          currentProject={currentProject} // Pass project to workspace
         />
       )}
     </div>

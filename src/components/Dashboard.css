@@ -1,0 +1,226 @@
+/* Dashboard Layout */
+.dashboard {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--bg-primary);
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.logo-text {
+    font-size: 1.2rem;
+    /* Increased from 0.9rem */
+    letter-spacing: 0.15em;
+    /* Increased spacing */
+    color: var(--text-primary);
+    /* brighter */
+    font-weight: 700;
+}
+
+/* Updated New Project Button to match VEXT style */
+.new-project-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: var(--accent-neon);
+    color: var(--bg-primary);
+    border: none;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.new-project-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--accent-neon-glow);
+}
+
+/* Grid Layout */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-xl);
+    width: 100%;
+}
+
+/* Empty State */
+.empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+}
+
+/* Project Card */
+.project-card {
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.project-card:hover {
+    border-color: var(--accent-neon);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.grade-badge {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 1.2rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.grade-badge.grade-A,
+.grade-badge.grade-B {
+    color: var(--accent-neon);
+    background: rgba(0, 255, 136, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
+}
+
+.grade-badge.grade-C {
+    color: var(--warning);
+    background: rgba(255, 170, 0, 0.1);
+}
+
+.grade-badge.grade-D,
+.grade-badge.grade-F {
+    color: var(--danger);
+    background: rgba(255, 68, 68, 0.1);
+}
+
+.delete-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: 0.2s;
+}
+
+.delete-btn:hover {
+    color: var(--danger);
+    background: rgba(255, 68, 68, 0.1);
+}
+
+.project-card:hover .delete-btn {
+    opacity: 1;
+}
+
+.card-content {
+    flex: 1;
+}
+
+.project-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    /* Standard property */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.project-tagline {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    /* Standard property */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.meta-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.open-indicator {
+    color: var(--accent-neon);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: 0.2s;
+}
+
+.project-card:hover .open-indicator {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard {
+        padding: var(--space-md);
+    }
+}

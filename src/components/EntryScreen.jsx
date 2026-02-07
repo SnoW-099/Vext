@@ -20,7 +20,7 @@ function EntryScreen({ onScan }) {
             {/* Header */}
             <header className="entry-header">
                 <div className="logo-section">
-                    <span className="logo">VEXT</span>
+                    <img src="/logo.png" alt="VEXT" className="logo-image" />
                     <span className="status">
                         <span className="status-dot" />
                         Status: Online
