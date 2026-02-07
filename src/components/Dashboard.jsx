@@ -47,10 +47,14 @@ function Dashboard({ onNewProject, onLoadProject }) {
                 {projects.length > 0 ? (
                     <div className="projects-grid">
                         {/* New Project Card - Only show in grid if we have projects */}
-                        <div className="project-card new-project" onClick={onNewProject}>
-                            <div className="card-icon">+</div>
-                            <h3>Nuevo Proyecto</h3>
-                            <p>Comenzar análisis</p>
+                        <div className="project-card new-project-template" onClick={onNewProject}>
+                            <div className="template-icon">
+                                <Plus size={24} />
+                            </div>
+                            <div className="template-info">
+                                <h3>Crear nuevo proyecto</h3>
+                                <p>Plantilla de análisis de negocio</p>
+                            </div>
                         </div>
 
                         {/* Saved Projects */}

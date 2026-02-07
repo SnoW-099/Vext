@@ -109,6 +109,7 @@
 }
 
 /* Project Card */
+/* Standard Project Card */
 .project-card {
     background: var(--bg-secondary);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -127,6 +128,52 @@
     border-color: var(--accent-neon);
     transform: translateY(-4px);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* New Project Template Card (Placeholder style) */
+.project-card.new-project-template {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--space-lg);
+}
+
+.project-card.new-project-template:hover {
+    border-color: var(--accent-neon);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: none;
+    transform: translateY(-2px);
+}
+
+.template-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: 0.2s;
+}
+
+.project-card.new-project-template:hover .template-icon {
+    background: var(--accent-neon);
+    color: var(--bg-primary);
+}
+
+.template-info h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.template-info p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
 }
 
 .card-top {
