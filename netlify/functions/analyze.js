@@ -1,19 +1,19 @@
-// Netlify Function: VEXT Analysis Engine - ULTRA-SPEED OPTIMIZED
+// Netlify Function: VEXT Analysis Engine - RELIABILITY & SPEED
 const PRIMARY_MODEL = 'gemini-1.5-flash';
 
-const VEXT_SYSTEM_PROMPT = `**ROLE:**
-Eres VEXT, un analista de negocios brutalmente honesto y experto en conversión digital.
-**OBJETIVO:**
-Analizar la visión del usuario y generar:
-1. Una Landing Page minimalista (Tailwind CSS, fondo negro, acentos verde neón #00ff88).
-2. Nota (0-100) con justificación honesta.
-3. Scripts virales.
+const VEXT_SYSTEM_PROMPT = `**ROLE:** Eres VEXT, un analista de negocios experto.
+**OBJETIVO:** Analizar la idea del usuario y generar una Landing Page minimalista.
+**REGLAS:**
+- Fondo negro (#000000), acentos verde neón (#00ff88).
+- Responde siempre en español.
+- Si la idea es mala, sé honesto y directo.
 **OUTPUT (SOLO JSON VÁLIDO):**
 {
   "analysis": { "grade": 0-100, "grade_letter": "S-F", "target_audience": "...", "psychology": [], "strategy": "..." },
   "landing_page": { "headline": "...", "subheadline": "...", "tailwind_html": "..." },
   "viral_kit": { "hooks": [], "scripts": [] }
-}`;
+}
+CRÍTICO: Devuelve solo JSON válido.`;
 
 exports.handler = async (event, context) => {
     const headers = {
@@ -27,96 +27,98 @@ exports.handler = async (event, context) => {
     if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
 
     try {
+        if (!event.body) throw new Error('Request body is empty');
         const body = JSON.parse(event.body);
         const { hypothesis, mode = 'create', currentHtml = '', context: userContext = {}, is_chat_only = false } = body;
         const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-        console.log(`[VEXT] Request: mode=${mode}, is_chat=${is_chat_only}`);
+        console.log(`[VEXT] Request: mode=${mode}, is_chat=${is_chat_only}, model=${PRIMARY_MODEL}`);
 
-        if (!GEMINI_API_KEY) return { statusCode: 500, headers, body: JSON.stringify({ error: 'API key not configured' }) };
+        if (!GEMINI_API_KEY) throw new Error('API key not configured');
 
-        // Define prompts
         let systemPrompt = VEXT_SYSTEM_PROMPT;
         let userContent = `IDEA: "${hypothesis}"`;
         let maxTokens = 4000;
+        let isChat = is_chat_only;
 
-        if (is_chat_only) {
-            systemPrompt = `Eres VEXT, un arquitecto web de élite. Responde de forma breve y profesional en español. No generes código. Máximo 2 frases.`;
-            userContent = `USER_MSG: "${hypothesis}"`;
-            maxTokens = 500;
+        if (isChat) {
+            systemPrompt = `Eres VEXT, un arquitecto web profesional. Responde de forma muy breve y amigable en español. Máximo 2 frases. No generes código.`;
+            userContent = `USER_MESSAGE: "${hypothesis}"`;
+            maxTokens = 800;
         } else if (mode === 'refine') {
-            const gradeValue = userContext.gradePercent || userContext.grade || 50;
-            systemPrompt = `Eres VEXT. Modifica la landing page según pida el usuario. 
-            Responde SOLO JSON con este formato: { "chat_response": "texto", "analysis": { "grade": ${gradeValue}, "grade_letter": "A", "grade_explanation": "..." }, "landing_page": { "headline": "...", "subheadline": "...", "tailwind_html": "..." } }`;
+            const gradeVal = userContext.gradePercent || userContext.grade || 50;
+            systemPrompt = `Eres VEXT. Modifica la landing page. Responde SOLO JSON: { "chat_response": "...", "analysis": { "grade": ${gradeVal}, ... }, "landing_page": { "tailwind_html": "..." } }`;
             userContent = `INSTRUCTION: "${hypothesis}"\nCURRENT_HTML: ${currentHtml}`;
         }
 
-        // Try models in order of preference
-        const models = [PRIMARY_MODEL, 'gemini-1.5-flash', 'gemini-pro'];
+        // Sequential try for models
+        const modelsToTry = [PRIMARY_MODEL, 'gemini-1.5-flash', 'gemini-pro'];
+        const tried = new Set();
         let lastError = null;
 
-        for (const model of models) {
+        for (const modelName of modelsToTry) {
+            if (tried.has(modelName)) continue;
+            tried.add(modelName);
+
             try {
-                console.log(`[VEXT] Trying model: ${model}`);
-                const result = await callGeminiDirect(systemPrompt, userContent, GEMINI_API_KEY, model, maxTokens);
-                console.log(`[VEXT] Success with ${model}`);
+                console.log(`[VEXT] Calling ${modelName}...`);
+                const result = await callGemini(systemPrompt, userContent, GEMINI_API_KEY, modelName, maxTokens, isChat);
                 return { statusCode: 200, headers, body: JSON.stringify(result) };
             } catch (err) {
-                console.warn(`[VEXT] Model ${model} failed:`, err.message);
+                console.warn(`[VEXT] ${modelName} failed:`, err.message);
                 lastError = err;
             }
         }
 
-        throw lastError || new Error('All models failed');
+        throw lastError || new Error('All Gemini models failed');
 
     } catch (error) {
-        console.error('[VEXT] Global function error:', error);
-        return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal server error', message: error.message }) };
+        console.error('[VEXT] Engine Error:', error);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ error: 'Internal server error', message: error.message })
+        };
     }
 };
 
-async function callGeminiDirect(systemPrompt, userContent, key, model, maxTokens = 4000) {
+async function callGemini(sys, user, key, model, maxT, isChat) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
 
-    // Check if fetch is available (Global in Node 18+)
-    if (typeof fetch === 'undefined') {
-        throw new Error('Global fetch is not available. Ensure Node.js version is 18+');
-    }
-
+    // We use standard fetch from Node 18+
     const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            contents: [{ parts: [{ text: `${systemPrompt}\n\n---\n\n${userContent}` }] }],
+            contents: [{ parts: [{ text: `${sys}\n\n---\n\n${user}` }] }],
             generationConfig: {
                 temperature: 0.7,
-                maxOutputTokens: maxTokens,
-                responseMimeType: maxTokens > 500 ? "application/json" : "text/plain"
+                maxOutputTokens: maxT,
+                // responseMimeType is dangerous if fallback model doesn't support it
+                ...(model.includes('1.5') ? { responseMimeType: isChat ? "text/plain" : "application/json" } : {})
             }
         })
     });
 
     if (!response.ok) {
-        const errTxt = await response.text();
-        throw new Error(`Gemini API Error (${model}): ${response.status} - ${errTxt}`);
+        const txt = await response.text();
+        throw new Error(`API ${model} returned ${response.status}: ${txt}`);
     }
 
     const data = await response.json();
-    const aiContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!aiContent) throw new Error(`Empty AI response from ${model}`);
+    const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!aiText) throw new Error(`Empty response from ${model}`);
 
-    if (maxTokens <= 500) {
-        return { chat_response: aiContent.trim() };
-    }
+    if (isChat) return { chat_response: aiText.trim() };
 
-    // Robust JSON parsing
     try {
-        const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/```\s*([\s\S]*?)\s*```/);
-        const jsonString = (jsonMatch ? jsonMatch[1] : aiContent).trim();
-        return JSON.parse(jsonString);
-    } catch (e) {
-        console.error(`[VEXT] JSON Parse Error for ${model}:`, e.message);
-        console.error(`[VEXT] Raw content was:`, aiContent.slice(0, 500) + '...');
-        throw new Error(`Invalid JSON response from ${model}`);
+        const jsonMatch = aiText.match(/```json\s*([\s\S]*?)\s*```/) || aiText.match(/```\s*([\s\S]*?)\s*```/);
+        const jsonStr = (jsonMatch ? jsonMatch[1] : aiText).trim();
+        return JSON.parse(jsonStr);
+    } catch (parseErr) {
+        console.error(`[VEXT] JSON Parse Error (${model}):`, parseErr.message);
+        // If it's chat-like even if not flagged, return as chat
+        if (aiText.length < 500 && !aiText.includes('html')) return { chat_response: aiText };
+        throw new Error(`Invalid JSON format from ${model}`);
     }
 }
