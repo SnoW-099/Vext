@@ -83,28 +83,33 @@ exports.handler = async (event, context) => {
 
         // MODE: REFINE (Modify existing HTML)
         if (mode === 'refine') {
+            // Safely extract context values and escape them
+            const gradeValue = context.gradePercent || context.grade || 50;
+            const gradeLetter = context.grade || 'C';
+            const titleSafe = String(context.title || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+            const taglineSafe = String(context.tagline || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+            const instructionSafe = String(hypothesis).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+
             const REFINE_PROMPT = `**ROLE:** Senior Frontend Engineer & Conversion Expert.
 **TASK:** Modify the provided Tailwind CSS HTML based on the user's instruction.
 **CONTEXT:** 
-- Current HTML: provided below.
-- Instruction: "${hypothesis}"
-- Business Context: ${JSON.stringify(context)}
+- Instruction: "${instructionSafe}"
 
 **RULES:**
 1. Keep the core structure unless asked to change.
-2. ONLY return the new HTML. No JSON wrapper (or wrapped in JSON if structure requires it, but let's stick to standard VEXT output format).
-3. Actually, to maintain consistency, return a JSON with "landing_page": { "tailwind_html": "..." } and a brief "analysis" of what changed.
+2. Return JSON with updated landing_page and analysis.
+3. Maintain VEXT design aesthetic (black bg, neon green accents).
 
 **OUTPUT JSON:**
 {
   "analysis": {
-    "grade": ${context.grade || 50}, 
-    "grade_letter": "${context.grade_letter || 'C'}",
+    "grade": ${gradeValue}, 
+    "grade_letter": "${gradeLetter}",
     "psychology": [] 
   },
   "landing_page": {
-    "headline": "${context.title || ''}",
-    "subheadline": "${context.tagline || ''}",
+    "headline": "${titleSafe}",
+    "subheadline": "${taglineSafe}",
     "tailwind_html": "FULL_UPDATED_HTML"
   }
 }
@@ -116,7 +121,7 @@ exports.handler = async (event, context) => {
                 return { statusCode: 200, headers, body: JSON.stringify(refinement) };
             } catch (error) {
                 console.error('Refinement failed:', error);
-                return { statusCode: 500, headers, body: JSON.stringify({ error: 'Refinement failed' }) };
+                return { statusCode: 500, headers, body: JSON.stringify({ error: 'Refinement failed', details: error.message }) };
             }
         }
 
