@@ -118,14 +118,14 @@
 .input-wrapper {
     width: 100%;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
+    /* Removed flex-direction column to allow absolute positioning of button inside */
 }
 
 .hypothesis-input {
     width: 100%;
     padding: var(--space-lg);
+    padding-bottom: calc(var(--space-lg) + 50px);
+    /* Space for button */
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
@@ -133,7 +133,8 @@
     font-size: 1rem;
     resize: none;
     transition: border-color var(--transition-base), box-shadow var(--transition-base);
-    min-height: 120px;
+    min-height: 160px;
+    /* Taller to accommodate button */
 }
 
 .hypothesis-input::placeholder {
@@ -143,51 +144,58 @@
 .hypothesis-input:focus {
     outline: none;
     border-color: var(--accent-neon);
-    box-shadow: 0 0 0 3px var(--accent-neon-glow);
+    box-shadow: 0 0 0 1px var(--accent-neon-glow);
+    /* Subtler glow */
 }
 
-/* Scan Button - Positioned below input, aligned right */
+/* Scan Button - Positioned INSIDE input, bottom right */
 .scan-button,
 .scan-btn {
-    /* Handle both class names used in code */
-    align-self: flex-end;
+    position: absolute;
+    bottom: var(--space-md);
+    right: var(--space-md);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-md);
-    padding: var(--space-sm) var(--space-xl);
+    padding: var(--space-sm) var(--space-lg);
     background: var(--accent-neon);
     color: var(--bg-primary);
     border: none;
     border-radius: var(--radius-sm);
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all var(--transition-fast);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    min-width: 120px;
+    z-index: 5;
 }
 
 .scan-button:hover:not(:disabled),
 .scan-btn:hover:not(:disabled) {
-    box-shadow: 0 0 15px var(--accent-neon-glow);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
 }
 
 .scan-button:disabled,
 .scan-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: not-allowed;
     background: var(--text-muted);
+    box-shadow: none;
 }
 
-/* Hint Text */
+/* Hint Text - Below the input wrapper */
 .hint-text {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
-    opacity: 0.8;
+    opacity: 0.7;
+    margin-top: var(--space-md);
+    text-align: left;
+    width: 100%;
+    padding-left: var(--space-xs);
 }
 
 .hint-label {
