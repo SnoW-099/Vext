@@ -127,6 +127,79 @@
     box-shadow: 0 0 10px var(--accent-neon);
 }
 
+/* === Category Tabs === */
+.category-tabs-container {
+    margin-bottom: var(--space-2xl);
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    display: inline-flex;
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.category-tabs-container::-webkit-scrollbar {
+    display: none;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 4px;
+}
+
+.category-tab {
+    background: transparent;
+    border: none;
+    padding: var(--space-sm) var(--space-xl);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    white-space: nowrap;
+}
+
+.category-tab:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.category-tab.active {
+    color: var(--accent-neon);
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.tab-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.tab-indicator {
+    position: absolute;
+    bottom: -5px;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    background: var(--accent-neon);
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--accent-neon-glow);
+    animation: tabFadeIn 0.3s ease;
+}
+
+@keyframes tabFadeIn {
+    from {
+        opacity: 0;
+        transform: scaleX(0.5);
+    }
+
+    to {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
 /* === Empty System Boot Screen === */
 .empty-boot-screen {
     display: flex;
