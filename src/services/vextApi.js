@@ -52,6 +52,15 @@ export async function analyzeHypothesis(hypothesis) {
     };
 }
 
+const SYSTEM_PROMPT = `
+You are VEXT, an elite AI web architect. Generate a high-conversion Single Page Application (SPA).
+DESIGN RULES:
+1. Premium Aesthetic: Dark mode or high-contrast light. Use gradients, glassmorphism.
+2. Navigation: Use anchor links (#features, #pricing). NO external pages.
+3. Content: Hero, Features (Grid), Testimonials, Pricing, FAQ, Footer.
+4. Interactive: Hover effects on all buttons/cards.
+`;
+
 function getGradeExplanation(score) {
     if (!score) return "El análisis no se ha completado correctamente. Inténtalo de nuevo.";
     if (score >= 90) return "Tu idea tiene un potencial excepcional. La fricción de mercado detectada es mínima y la demanda parece alta.";
@@ -111,7 +120,73 @@ export function getMockAnalysis(hypothesis) {
         websitePreview: {
             title: hypothesis.slice(0, 50) + '...',
             tagline: 'Transform your workflow today',
-            html: ''
+            html: `
+            <div class="bg-slate-900 text-white min-h-screen font-sans selection:bg-emerald-500 selection:text-white">
+                <nav class="fixed w-full z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
+                    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                        <span class="font-bold text-xl tracking-tighter">VEXT<span class="text-emerald-400">.GENERATED</span></span>
+                        <div class="hidden md:flex gap-8 text-sm font-medium text-slate-400">
+                            <a href="#features" class="hover:text-emerald-400 transition-colors">Features</a>
+                            <a href="#demo" class="hover:text-emerald-400 transition-colors">Demo</a>
+                            <a href="#pricing" class="hover:text-emerald-400 transition-colors">Pricing</a>
+                        </div>
+                        <button class="bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-6 py-2 rounded-full font-bold transition-all hover:scale-105">Get Started</button>
+                    </div>
+                </nav>
+
+                <main>
+                    <section class="pt-32 pb-20 px-6 text-center">
+                        <div class="inline-block px-4 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium mb-8">
+                            New: AI-Powered Analysis 2.0
+                        </div>
+                        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent">
+                            ${hypothesis.slice(0, 30)}...<br/>
+                            <span class="text-emerald-500">Made Simple.</span>
+                        </h1>
+                        <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                            Stop wasting time on manual processes. Our solution automates the heavy lifting so you can focus on what actually matters—growing your business.
+                        </p>
+                        <div class="flex flex-col md:flex-row justify-center gap-4">
+                            <button class="bg-emerald-500 text-slate-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-emerald-400 transition-all hover:scale-105 shadow-[0_0_40px_-10px_rgba(16,185,129,0.5)]">
+                                Start Free Trial
+                            </button>
+                            <button class="px-8 py-4 rounded-full font-bold text-lg border border-white/10 hover:bg-white/5 transition-all">
+                                View Demo
+                            </button>
+                        </div>
+                    </section>
+
+                    <section id="features" class="py-24 bg-slate-800/50">
+                        <div class="max-w-7xl mx-auto px-6">
+                            <h2 class="text-3xl font-bold mb-16 text-center">Why Industry Leaders Choose Us</h2>
+                            <div class="grid md:grid-cols-3 gap-8">
+                                <div class="p-8 rounded-3xl bg-slate-900 border border-white/5 hover:border-emerald-500/30 transition-all group">
+                                    <div class="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                        <svg class="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    </div>
+                                    <h3 class="text-xl font-bold mb-4">Lightning Fast</h3>
+                                    <p class="text-slate-400 leading-relaxed">Optimized for speed and performance. Don't let slow tools hold you back anymore.</p>
+                                </div>
+                                <div class="p-8 rounded-3xl bg-slate-900 border border-white/5 hover:border-emerald-500/30 transition-all group">
+                                    <div class="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                        <svg class="w-6 h-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                    </div>
+                                    <h3 class="text-xl font-bold mb-4">Bank-Grade Security</h3>
+                                    <p class="text-slate-400 leading-relaxed">Your data is encrypted and protected by enterprise-level security protocols.</p>
+                                </div>
+                                <div class="p-8 rounded-3xl bg-slate-900 border border-white/5 hover:border-emerald-500/30 transition-all group">
+                                    <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                        <svg class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                    </div>
+                                    <h3 class="text-xl font-bold mb-4">Real-fime Analytics</h3>
+                                    <p class="text-slate-400 leading-relaxed">Track your growth with our comprehensive dashboard and reporting tools.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+            `
         },
         viralKit: {
             hooks: [

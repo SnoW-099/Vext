@@ -724,16 +724,19 @@
    ============================================ */
 .floating-preview {
     position: fixed;
-    right: var(--space-xl);
+    right: 32px;
+    /* Slight adjustment */
     top: 50%;
     transform: translateY(-50%);
     z-index: 80;
 }
 
 .preview-thumb {
+    display: flex;
+    /* Ensure flex for centering */
     flex-direction: column;
     align-items: center;
-    gap: var(--space-sm);
+    gap: var(--space-md);
     background: none;
     border: none;
     cursor: pointer;
@@ -741,65 +744,75 @@
 }
 
 .preview-thumb:hover {
-    transform: scale(1.05);
-}
-
-.preview-thumb:hover .thumb-frame {
-    border-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.02);
 }
 
 .thumb-frame {
-    width: 80px;
+    width: 140px;
+    /* Increased from 80px */
     background: var(--bg-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    padding: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 6px;
     transition: border-color var(--transition-fast);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .thumb-notch {
-    width: 20px;
-    height: 3px;
+    width: 30px;
+    /* Scaled up */
+    height: 4px;
     background: var(--bg-tertiary);
     border-radius: 2px;
-    margin: 2px auto 4px;
+    margin: 4px auto 8px;
 }
 
 .thumb-content {
     background: var(--bg-tertiary);
-    border-radius: 8px;
-    padding: 8px 6px;
+    border-radius: 10px;
+    padding: 12px 10px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
+    min-height: 200px;
+    /* Taller */
 }
 
 .thumb-title {
-    font-size: 0.4rem;
+    font-size: 0.6rem;
+    /* Larger text */
     color: var(--text-primary);
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 600;
 }
 
 .thumb-placeholder {
-    height: 24px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 2px;
+    height: 60px;
+    /* Larger */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+    border-radius: 4px;
 }
 
 .thumb-cta {
-    height: 8px;
+    height: 12px;
     background: var(--accent-neon);
-    border-radius: 2px;
-    opacity: 0.6;
+    border-radius: 4px;
+    opacity: 0.8;
+    margin-top: auto;
 }
 
 .preview-label {
-    font-size: 0.55rem;
-    letter-spacing: 0.15em;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
     color: var(--text-muted);
+    font-weight: 600;
+}
+
+letter-spacing: 0.15em;
+color: var(--text-muted);
 }
 
 /* Expanded Preview (Desktop) */

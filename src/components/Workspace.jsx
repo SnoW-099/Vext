@@ -43,14 +43,17 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
         setIsSaving(true);
         try {
             const projectToSave = {
+                ...currentProject, // Keep existing fields like createdAt
                 id: projectId,
                 hypothesis: hypothesis || data.websitePreview.title,
                 grade: data.grade,
                 gradePercent: data.gradePercent,
+                gradeExplanation: data.gradeExplanation, // Persist explanation
+                strategy: data.strategy, // Persist strategy
                 websitePreview: data.websitePreview,
                 psychology: data.psychologyDetails || data.psychology,
                 targeting: data.targeting,
-                // Add any other needed data
+                updatedAt: new Date().toISOString()
             };
 
             const savedProject = projectService.save(projectToSave);
