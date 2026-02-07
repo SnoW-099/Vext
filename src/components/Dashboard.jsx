@@ -32,69 +32,107 @@ function Dashboard({ onNewProject, onLoadProject }) {
 
     return (
         <div className="dashboard">
-            <header className="dashboard-header">
-                <div className="header-brand">
-                    <span className="logo-mark mono">VEXT</span>
-                    <span className="logo-text mono">PROYECTOS</span>
-                </div>
-            </header>
+            const DEMO_PROJECTS = [
+            {
+                id: 'demo-1',
+            isDemo: true,
+            grade: 'A',
+            hypothesis: 'Plataforma de alquiler de ropa de bebé por suscripción',
+            updatedAt: new Date().toISOString(),
+            websitePreview: {
+                title: 'BabyLife Loop',
+            tagline: 'Ropa premium para tu bebé, sin comprarla.'
+            }
+        },
+            {
+                id: 'demo-2',
+            isDemo: true,
+            grade: 'B',
+            hypothesis: 'Consultoría de ciberseguridad para PYMES remota',
+            updatedAt: new Date(Date.now() - 86400000).toISOString(),
+            websitePreview: {
+                title: 'SecureSmall Remote',
+            tagline: 'Protege tu negocio desde cualquier lugar.'
+            }
+        }
+            ];
 
-            <main className="dashboard-content">
-                <div className="projects-grid">
-                    {/* New Project Template - Always visible */}
-                    <div className="project-card new-project-template" onClick={onNewProject}>
-                        <div className="template-icon">
-                            <Plus size={24} />
+    const displayProjects = projects.length > 0 ? projects : DEMO_PROJECTS;
+
+            return (
+            <div className="dashboard">
+                <header className="dashboard-header">
+                    <div className="header-brand-column">
+                        <div className="brand-row">
+                            <span className="logo-mark mono">VEXT</span>
+                            <span className="logo-text mono">PROYECTOS</span>
                         </div>
-                        <div className="template-info">
-                            <h3>Crear nuevo proyecto</h3>
-                            <p>Plantilla de análisis de negocio</p>
-                        </div>
+                        <p className="header-subtitle">Crea y gestiona los análisis de tus ideas de negocio</p>
                     </div>
+                </header>
 
-                    {/* Saved Projects */}
-                    {projects.map((project) => (
-                        <div
-                            key={project.id}
-                            className="project-card"
-                            onClick={() => onLoadProject(project)}
-                        >
-                            <div className="card-top">
-                                <span className={`grade-badge grade-${project.grade || 'C'}`}>
-                                    {project.grade || 'C'}
-                                </span>
-                                <button
-                                    className="delete-btn"
-                                    onClick={(e) => handleDelete(e, project.id)}
-                                >
-                                    <Trash2 size={16} />
-                                </button>
+                <main className="dashboard-content">
+                    <div className="projects-grid">
+                        {/* New Project CTA - High Visibility */}
+                        <div className="project-card new-project-cta" onClick={onNewProject}>
+                            <div className="cta-icon-wrapper">
+                                <Plus size={32} />
                             </div>
-
-                            <div className="card-content">
-                                <h3 className="project-title">
-                                    {project.websitePreview?.title || project.hypothesis?.slice(0, 40) || 'Sin Título'}
-                                </h3>
-                                <p className="project-tagline">
-                                    {project.websitePreview?.tagline || 'Sin descripción'}
-                                </p>
-                            </div>
-
-                            <div className="card-footer">
-                                <div className="meta-info">
-                                    <Calendar size={14} />
-                                    <span>{formatDate(project.updatedAt)}</span>
-                                </div>
-                                <div className="open-indicator">
-                                    <ArrowRight size={16} />
-                                </div>
+                            <div className="cta-content">
+                                <h3>Nuevo Análisis</h3>
+                                <p>Validar nueva idea</p>
                             </div>
                         </div>
-                    ))}
-                </div>
-            </main>
-        </div>
-    );
+
+                        {/* Content Cards (User Projects or Demos) */}
+                        {displayProjects.map((project) => (
+                            <div
+                                key={project.id}
+                                className={`project-card ${project.isDemo ? 'demo-card' : ''}`}
+                                onClick={() => !project.isDemo && onLoadProject(project)}
+                                style={project.isDemo ? { cursor: 'default' } : {}}
+                            >
+                                <div className="card-top">
+                                    <span className={`grade-badge grade-${project.grade || 'C'}`}>
+                                        {project.grade || 'C'}
+                                    </span>
+                                    {project.isDemo && <span className="demo-badge">EJEMPLO</span>}
+                                    {!project.isDemo && (
+                                        <button
+                                            className="delete-btn"
+                                            onClick={(e) => handleDelete(e, project.id)}
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className="card-content">
+                                    <h3 className="project-title">
+                                        {project.websitePreview?.title || project.hypothesis?.slice(0, 40) || 'Sin Título'}
+                                    </h3>
+                                    <p className="project-tagline">
+                                        {project.websitePreview?.tagline || 'Sin descripción'}
+                                    </p>
+                                </div>
+
+                                <div className="card-footer">
+                                    <div className="meta-info">
+                                        <Calendar size={14} />
+                                        <span>{formatDate(project.updatedAt)}</span>
+                                    </div>
+                                    {!project.isDemo && (
+                                        <div className="open-indicator">
+                                            <ArrowRight size={16} />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </main>
+            </div>
+            );
 }
 
-export default Dashboard;
+            export default Dashboard;

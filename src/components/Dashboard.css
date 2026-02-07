@@ -31,47 +31,106 @@
 
 .dashboard-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     margin-bottom: var(--space-3xl);
     padding-bottom: var(--space-lg);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    gap: var(--space-xs);
 }
 
-.header-brand {
+.header-brand-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.brand-row {
     display: flex;
     align-items: center;
     gap: var(--space-md);
 }
 
+.header-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-left: 2px;
+}
+
 .logo-text {
     font-size: 1.2rem;
-    /* Increased from 0.9rem */
     letter-spacing: 0.15em;
-    /* Increased spacing */
     color: var(--text-primary);
-    /* brighter */
     font-weight: 700;
 }
 
-/* Updated New Project Button to match VEXT style */
-.new-project-btn {
-    display: flex;
+/* === New Project CTA Card === */
+.project-card.new-project-cta {
+    background: rgba(0, 255, 136, 0.03);
+    border: 1px solid var(--accent-neon);
     align-items: center;
-    gap: var(--space-sm);
-    background: var(--accent-neon);
-    color: var(--bg-primary);
-    border: none;
-    padding: var(--space-sm) var(--space-lg);
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    justify-content: center;
+    text-align: center;
+    gap: var(--space-md);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.05);
 }
 
-.new-project-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--accent-neon-glow);
+.project-card.new-project-cta:hover {
+    transform: translateY(-4px);
+    background: rgba(0, 255, 136, 0.08);
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+}
+
+.cta-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--accent-neon);
+    color: var(--bg-primary);
+    /* Dark icon on bright bg */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+    transition: transform 0.2s ease;
+}
+
+.project-card.new-project-cta:hover .cta-icon-wrapper {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+}
+
+.cta-content h3 {
+    color: var(--accent-neon);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: var(--space-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.cta-content p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* === Demo Card Styling === */
+.project-card.demo-card {
+    opacity: 0.5;
+    filter: grayscale(0.8);
+    border-style: dashed;
+    pointer-events: none;
+    /* Non-clickable based on user description */
+}
+
+.demo-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    border: 1px solid var(--text-muted);
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
 }
 
 /* Grid Layout */
