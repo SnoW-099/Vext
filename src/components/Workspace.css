@@ -426,7 +426,8 @@
     flex-direction: column;
     flex: 1;
     min-height: calc(100dvh - 120px);
-    padding: var(--space-lg);
+    padding: var(--space-lg) 24px;
+    /* More horizontal breathing room */
     overflow-y: auto;
 }
 
