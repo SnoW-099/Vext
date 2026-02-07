@@ -79,6 +79,35 @@
     opacity: 0.5;
 }
 
+/* Start Analysis CTA Button */
+.cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    padding: var(--space-md) var(--space-2xl);
+    background: var(--accent-neon);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+    letter-spacing: 0.05em;
+}
+
+.cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 255, 136, 0.5);
+}
+
+.cta-btn:active {
+    transform: scale(0.97);
+}
+
 /* Project Card */
 .project-card {
     background: var(--bg-secondary);

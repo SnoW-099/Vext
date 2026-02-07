@@ -249,6 +249,25 @@
     opacity: 0.6;
 }
 
+/* Typing Cursor Animation */
+.typing-cursor {
+    color: var(--accent-neon);
+    animation: cursorBlink 0.8s step-end infinite;
+    font-weight: 400;
+}
+
+@keyframes cursorBlink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
 /* Footer */
 .entry-footer {
     padding: var(--space-lg) var(--space-xl);

@@ -76,6 +76,7 @@ export async function refineHypothesis(currentHtml, instruction, context) {
         // Merge with existing data structure where possible
         grade: data.analysis?.grade || context.grade,
         gradePercent: data.analysis?.grade || context.gradePercent,
+        chatResponse: data.chat_response || 'Cambios aplicados.',
         websitePreview: {
             title: data.landing_page?.headline || context.title,
             tagline: data.landing_page?.subheadline || context.tagline,

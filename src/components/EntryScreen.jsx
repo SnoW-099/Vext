@@ -1,9 +1,51 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './EntryScreen.css'
+
+const EXAMPLES = [
+    'A subscription box for artisan coffee lovers',
+    'An AI fitness coach for busy professionals',
+    'A marketplace for handmade eco-friendly products',
+    'A language learning app using music lyrics',
+    'A pet services platform connecting owners with walkers'
+];
 
 function EntryScreen({ onScan }) {
     const [hypothesis, setHypothesis] = useState('')
     const [isHovered, setIsHovered] = useState(false)
+    const [currentExample, setCurrentExample] = useState('')
+    const [exampleIndex, setExampleIndex] = useState(0)
+    const [charIndex, setCharIndex] = useState(0)
+    const [isDeleting, setIsDeleting] = useState(false)
+
+    // Typewriter effect
+    useEffect(() => {
+        const targetExample = EXAMPLES[exampleIndex];
+
+        const timeout = setTimeout(() => {
+            if (!isDeleting) {
+                // Typing
+                if (charIndex < targetExample.length) {
+                    setCurrentExample(targetExample.substring(0, charIndex + 1));
+                    setCharIndex(charIndex + 1);
+                } else {
+                    // Pause before deleting
+                    setTimeout(() => setIsDeleting(true), 2000);
+                }
+            } else {
+                // Deleting
+                if (charIndex > 0) {
+                    setCurrentExample(targetExample.substring(0, charIndex - 1));
+                    setCharIndex(charIndex - 1);
+                } else {
+                    // Move to next example
+                    setIsDeleting(false);
+                    setExampleIndex((exampleIndex + 1) % EXAMPLES.length);
+                }
+            }
+        }, isDeleting ? 30 : 60);
+
+        return () => clearTimeout(timeout);
+    }, [charIndex, isDeleting, exampleIndex]);
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -66,7 +108,7 @@ function EntryScreen({ onScan }) {
                     </form>
 
                     <p className="hint mono text-muted">
-                        Example: "A subscription box for artisan coffee lovers"
+                        Example: "{currentExample}<span className="typing-cursor">|</span>"
                     </p>
                 </div>
             </main>

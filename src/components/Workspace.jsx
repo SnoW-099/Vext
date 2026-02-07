@@ -107,7 +107,7 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
 
             // Replace loading message with success
             setChatHistory(prev => prev.map(msg =>
-                msg.isLoading ? { role: 'ai', content: `Refinement complete: ${refinedData.websitePreview.title}` } : msg
+                msg.isLoading ? { role: 'ai', content: refinedData.chatResponse } : msg
             ));
 
         } catch (error) {
