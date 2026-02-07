@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import EntryScreen from './components/EntryScreen'
 import LoadingScreen from './components/LoadingScreen'
-import ResultsDashboard from './components/ResultsDashboard'
+import Workspace from './components/Workspace'
 
 function App() {
   const [stage, setStage] = useState('entry') // 'entry' | 'loading' | 'results'
@@ -41,13 +41,13 @@ function App() {
         <EntryScreen onScan={handleScan} />
       )}
       {stage === 'loading' && (
-        <LoadingScreen 
-          hypothesis={hypothesis} 
-          onComplete={handleLoadingComplete} 
+        <LoadingScreen
+          hypothesis={hypothesis}
+          onComplete={handleLoadingComplete}
         />
       )}
       {stage === 'results' && (
-        <ResultsDashboard 
+        <Workspace
           hypothesis={hypothesis}
           data={analysisData}
           onReset={handleReset}
