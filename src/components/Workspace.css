@@ -658,6 +658,28 @@
     opacity: 0.5;
 }
 
+.jumping-dot {
+    display: inline-block;
+    animation: jump 1.4s infinite ease-in-out both;
+    margin-left: 2px;
+    color: var(--accent-neon);
+}
+
+@keyframes jump {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
 /* ============================================
    MOBILE: Stats Page Content
    ============================================ */

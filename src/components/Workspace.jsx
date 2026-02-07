@@ -350,9 +350,20 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                                 </div>
                                 <div className="message-content">
                                     {msg.role === 'ai' && msg.isLoading ? (
-                                        <div className="typing-indicator mono">Running refinement protocols...</div>
+                                        <div className="typing-indicator mono">
+                                            Thinking
+                                            <span className="jumping-dot">.</span>
+                                            <span className="jumping-dot" style={{ animationDelay: '0.2s' }}>.</span>
+                                            <span className="jumping-dot" style={{ animationDelay: '0.4s' }}>.</span>
+                                        </div>
                                     ) : (
-                                        <p>{msg.content}</p>
+                                        msg.role === 'ai' ? (
+                                            <p className="ai-text-content">
+                                                <Typewriter text={msg.content} speed={15} />
+                                            </p>
+                                        ) : (
+                                            <p>{msg.content}</p>
+                                        )
                                     )}
                                 </div>
                             </div>
