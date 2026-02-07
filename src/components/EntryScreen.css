@@ -145,35 +145,43 @@
     position: relative;
 }
 
+/* Minimalist Tech Input */
 .hypothesis-input {
     width: 100%;
     padding: var(--space-lg);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    /* More rounded corners */
+    background: rgba(255, 255, 255, 0.03);
+    /* Lighter, cleaner */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0;
+    /* Sharp corners for tech feel */
     color: var(--text-primary);
+    font-family: var(--font-mono);
     font-size: 1.1rem;
-    /* Slightly larger text */
+    /* Readable size */
+    line-height: 1.6;
     resize: none;
-    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    transition: all var(--transition-base);
     min-height: 140px;
     text-align: left;
-    /* Left align text */
+    backdrop-filter: blur(5px);
 }
 
 .hypothesis-input::placeholder {
     color: var(--text-muted);
-    opacity: 0.5;
+    opacity: 0.3;
+    font-family: var(--font-mono);
+    font-weight: 300;
 }
 
 .hypothesis-input:focus {
     outline: none;
     border-color: var(--accent-neon);
-    box-shadow: 0 0 0 1px var(--accent-neon-glow);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 1px rgba(0, 255, 136, 0.1);
+    /* Very subtle glow */
 }
 
-/* Scan Button - Centered below input */
+/* Scan Button - Minimal Tech */
 .scan-button,
 .scan-btn {
     position: relative;
@@ -185,35 +193,38 @@
     justify-content: center;
     gap: var(--space-md);
     padding: var(--space-md) var(--space-2xl);
-    /* Larger padding */
-    background: var(--accent-neon);
-    color: var(--bg-primary);
-    border: none;
-    border-radius: 9999px;
-    /* Fully rounded pill */
-    font-size: 1rem;
-    font-weight: 800;
+    background: transparent;
+    /* Clean start */
+    color: var(--accent-neon);
+    border: 1px solid var(--accent-neon);
+    border-radius: 0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all var(--transition-base);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
     z-index: 5;
     margin-top: calc(var(--space-sm) * -1);
-    /* Pull up slightly closer */
-    min-width: 220px;
+    min-width: 200px;
 }
 
 .scan-button:hover:not(:disabled),
 .scan-btn:hover:not(:disabled) {
+    background: var(--accent-neon);
+    color: var(--bg-primary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.5);
+    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.2);
 }
 
 .scan-button:disabled,
 .scan-btn:disabled {
     opacity: 0.3;
     cursor: not-allowed;
-    background: var(--text-muted);
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    background: transparent;
     box-shadow: none;
     transform: none;
 }
