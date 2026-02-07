@@ -45,7 +45,8 @@ Analizar la visión del usuario y generar:
     "target_audience": "Perfil demográfico y psicográfico REALISTA",
     "psychology": [
       {"trigger": "Trigger específico", "explanation": "Por qué funciona para conversión"}
-    ]
+    ],
+    "strategy": "Resumen estratégico de 2 líneas explicando el enfoque tomado (ej: 'Se prioriza la prueba social y la urgencia...')"
   },
   "landing_page": {
     "headline": "Headline magnético",
@@ -109,7 +110,11 @@ exports.handler = async (event, context) => {
 - Explicas brevemente qué cambios hiciste y por qué
 - Si la instrucción no tiene sentido, lo dices amablemente
 
-**IMPORTANTE:** Modifica el HTML según lo pedido. Mantén el estilo VEXT (fondo negro, acentos verde neón #00ff88).
+**IMPORTANTE:**
+1. PRIORIDAD ABSOLUTA a la instrucción visual del usuario. SIEMPRE obedece cambios de color/estilo.
+2. Si el usuario pide "minimalista", "blanco y negro" o similar, ELIMINA el estilo neón/negro por defecto.
+3. SOLO si el usuario NO especifica colores, mantén el estilo VEXT (fondo negro, acentos neón).
+4. Sé camaleónico: adáptate al estilo que pida el usuario.
 
 **Responde SOLO con este JSON:**
 {

@@ -89,18 +89,22 @@
    DESKTOP: LEFT RAIL
    ============================================ */
 .left-rail {
-    width: 56px;
-    min-width: 56px;
+    width: 64px;
+    /* Slightly wider */
+    min-width: 64px;
     height: 100vh;
     position: sticky;
     top: 0;
     background: var(--bg-secondary);
     border-right: 1px solid rgba(255, 255, 255, 0.04);
+    display: flex;
+    /* Explicitly set display flex */
     flex-direction: column;
     align-items: center;
     padding: var(--space-md) 0;
     z-index: 100;
     flex-shrink: 0;
+    /* Critical for sticky to work */
 }
 
 .rail-top {
@@ -1126,12 +1130,16 @@
 .chat-input-container {
     display: flex;
     gap: var(--space-md);
-    padding: var(--space-lg);
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(12px);
+    padding: var(--space-md) 0;
+    /* Reduced padding, removed side padding */
+    background: transparent;
+    /* Removed dark background */
+    backdrop-filter: none;
+    /* Removed blur */
     border-top: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: var(--radius-lg);
-    margin: var(--space-md) auto;
+    /* Kept only top divider */
+    border-radius: 0;
+    margin: 0 auto;
     /* Center horizontally */
     width: 100%;
     max-width: 1000px;

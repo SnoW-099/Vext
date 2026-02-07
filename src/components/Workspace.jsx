@@ -285,15 +285,10 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                                 <div className="report-section">
                                     <span className="section-label mono">Strategy Overview</span>
                                     <p className="section-text">
-                                        Your business concept has been analyzed against market trends, competitor positioning,
-                                        and psychological conversion patterns. The generated landing page implements a
-                                        high-conversion architecture optimized for your target demographic.
+                                        {data?.strategy || "Analysis in progress..."}
                                     </p>
                                 </div>
-                                <div className="metrics-row-small">
-                                    <span className="metric-tag grade">GRADE: {data?.grade}</span>
-                                    <span className="metric-tag">TRIGGERS: {data?.psychology?.length || 0}</span>
-                                </div>
+
                             </div>
                         </div>
 
