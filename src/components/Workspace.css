@@ -387,10 +387,13 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: var(--space-3xl);
-    margin-right: 120px;
+    padding: var(--space-xl);
+    /* Reduced from 3xl */
+    margin-right: 0;
+    width: 100%;
     /* Space for floating preview on desktop */
-    overflow-y: auto;
+    overflow-y: hidden;
+    /* Changed to hidden to let chat-messages scroll */
 }
 
 @media (max-width: 768px) {
@@ -1029,4 +1032,122 @@
     color: var(--text-secondary);
     line-height: 1.5;
     padding-left: calc(6px + var(--space-md));
+}
+
+/* ============================================
+   CHAT INTERFACE (Desktop)
+   ============================================ */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    animation: fadeIn 0.3s ease;
+    max-width: 90%;
+}
+
+.message.ai {
+    align-self: flex-start;
+}
+
+.message.user {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+/* Fix for mashup text */
+.message-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* Fallback if gap fails */
+.message-role {
+    font-weight: 700;
+    color: var(--accent-neon);
+    margin-right: var(--space-sm);
+}
+
+.metrics-row-small {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.metric-tag {
+    font-size: 0.7rem;
+    font-family: 'Space Mono', monospace;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-right: var(--space-md);
+    /* Fallback */
+}
+
+/* Chat Input Fix */
+.chat-input {
+    flex: 1;
+    min-width: 0;
+    /* CRITICAL: Allows input to shrink in flex container */
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.chat-input:focus {
+    border-color: var(--accent-neon);
+}
+
+.chat-send-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-neon);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.chat-send-btn:hover {
+    transform: scale(1.05);
 }
