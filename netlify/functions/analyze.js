@@ -27,12 +27,12 @@ You MUST respond with ONLY valid JSON. No markdown, no explanation, no code bloc
 
 {
   "analysis": {
-    "grade": 87,
-    "grade_letter": "A",
+    "grade": "Integer 0-100. Be brutally honest. Vague inputs get <50. detailed inputs get >80.",
+    "grade_letter": "Calculate based on grade (F, D, C, B, A, S)",
     "target_audience": "Deep demographic and psychographic profile description",
     "psychology": [
-      {"trigger": "Urgency", "explanation": "Why this works for conversion"},
-      {"trigger": "Social Proof", "explanation": "Why this works for conversion"}
+      {"trigger": "Specific Trigger 1", "explanation": "Why this works for conversion"},
+      {"trigger": "Specific Trigger 2", "explanation": "Why this works for conversion"}
     ]
   },
   "landing_page": {
@@ -41,18 +41,20 @@ You MUST respond with ONLY valid JSON. No markdown, no explanation, no code bloc
     "tailwind_html": "<html><head><script src='https://cdn.tailwindcss.com'></script></head><body class='min-h-screen bg-black text-white'>...</body></html>"
   },
   "viral_kit": {
-    "hooks": ["Hook 1 - attention grabber", "Hook 2 - curiosity driver"],
+    "hooks": ["Hook 1", "Hook 2"],
     "scripts": [
       {
         "platform": "TikTok",
         "duration": "15s",
-        "script": "Full script with visual cues [SHOW product] [CUT TO face]..."
+        "script": "Full script..."
       }
     ]
   }
 }
 
-CRITICAL: The tailwind_html must be a COMPLETE HTML document with the Tailwind CDN script tag. Dark mode. Mobile-first.`;
+CRITICAL: 
+1. The tailwind_html must be a COMPLETE HTML document with the Tailwind CDN script tag. Dark mode. Mobile-first.
+2. GRADING RULE: If the user input is short/vague (e.g. "coffee shop"), give a LOW grade (40-60) and basic triggers. If detailed, give HIGH grade. DO NOT ALWAYS GIVE 87. Make it feel real.`;
 
 exports.handler = async (event, context) => {
     // CORS headers

@@ -32,9 +32,9 @@ export async function analyzeHypothesis(hypothesis) {
 
     // Transform to match existing frontend structure
     return {
-        grade: data.analysis?.grade_letter || 'A',
-        gradePercent: data.analysis?.grade || 87,
-        targeting: data.analysis?.target_audience || '',
+        grade: data.analysis?.grade_letter || calculateGradeLetter(data.analysis?.grade),
+        gradePercent: data.analysis?.grade || 65,
+        targeting: data.analysis?.target_audience || 'Target audience not defined.',
         psychology: data.analysis?.psychology?.map(p => p.trigger) || [],
         psychologyDetails: data.analysis?.psychology || [],
         websitePreview: {
@@ -94,4 +94,14 @@ function injectPreviewStyles(html) {
     </style>
     `;
     return html.replace('</head>', `${styles}</head>`);
+}
+
+function calculateGradeLetter(score) {
+    if (!score) return 'C';
+    if (score >= 95) return 'S';
+    if (score >= 90) return 'A';
+    if (score >= 80) return 'B';
+    if (score >= 70) return 'C';
+    if (score >= 60) return 'D';
+    return 'F';
 }
