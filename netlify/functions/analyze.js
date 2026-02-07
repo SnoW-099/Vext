@@ -264,27 +264,51 @@ async function callGemini(hypothesis, model, key) {
 }
 
 async function callGeminiWithPrompt(systemPrompt, userContent, key) {
-    const model = 'gemini-1.5-flash'; // Use Flash for speed in chat
+    const model = 'gemini-1.5-flash';
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
 
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            contents: [{ parts: [{ text: `${systemPrompt}\n\n---\n\nCONTENT TO MODIFY:\n${userContent}` }] }],
-            generationConfig: { temperature: 0.7, maxOutputTokens: 8192, responseMimeType: "application/json" }
-        })
-    });
+    console.log('[REFINE] Starting refinement with model:', model);
+    console.log('[REFINE] User content length:', userContent?.length || 0);
 
-    if (!response.ok) {
-        throw new Error(`Refinement model failed: ${response.status}`);
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `${systemPrompt}\n\n---\n\nCONTENT TO MODIFY:\n${userContent || 'No content provided'}` }] }],
+                generationConfig: { temperature: 0.7, maxOutputTokens: 8192, responseMimeType: "application/json" }
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('[REFINE] Gemini API error:', response.status, errorText);
+            throw new Error(`Refinement model failed: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        console.log('[REFINE] Got Gemini response');
+
+        const aiContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!aiContent) {
+            console.error('[REFINE] Empty AI response. Full data:', JSON.stringify(data));
+            throw new Error('Empty response from AI');
+        }
+
+        console.log('[REFINE] AI content preview:', aiContent.substring(0, 200));
+
+        // Try to parse JSON, with fallback handling
+        const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/```\s*([\s\S]*?)\s*```/);
+        const jsonString = jsonMatch ? jsonMatch[1] : aiContent;
+
+        try {
+            return JSON.parse(jsonString.trim());
+        } catch (parseError) {
+            console.error('[REFINE] JSON parse failed. Raw content:', jsonString.substring(0, 500));
+            throw new Error(`JSON parse error: ${parseError.message}`);
+        }
+    } catch (fetchError) {
+        console.error('[REFINE] Fetch error:', fetchError);
+        throw fetchError;
     }
-
-    const data = await response.json();
-    const aiContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!aiContent) throw new Error('Empty response');
-
-    const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) || aiContent.match(/```\s*([\s\S]*?)\s*```/);
-    const jsonString = jsonMatch ? jsonMatch[1] : aiContent;
-    return JSON.parse(jsonString.trim());
 }
