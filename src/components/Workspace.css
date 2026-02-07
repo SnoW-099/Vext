@@ -598,16 +598,39 @@
     max-width: 260px;
 }
 
+/* Force iframe to be full screen on mobile when direct child of mobile-preview-content */
+.mobile-preview-content iframe.preview-iframe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: calc(100dvh - 80px) !important;
+    /* Subtract tab bar height */
+    z-index: 50;
+    border-radius: 0 !important;
+    background: #000;
+}
+
 /* ============================================
    SHARED: Phone Frame & Preview
    ============================================ */
 .phone-frame-large {
-    width: 280px;
+    width: 375px;
+    /* Standard mobile width, increased from 280px */
     background: var(--bg-secondary);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 32px;
+    border-radius: 48px;
     padding: var(--space-sm);
     box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+    transition: width 0.3s ease;
+}
+
+@media (min-width: 1024px) {
+
+    /* Even wider on large desktop screens if needed for "less compact" feel */
+    .phone-frame-large {
+        width: 400px;
+    }
 }
 
 .phone-frame-large .phone-notch {
