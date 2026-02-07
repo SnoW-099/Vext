@@ -91,44 +91,19 @@ function Dashboard({ onNewProject, onLoadProject }) {
                                     </div>
                                 </div>
                             </div>
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </div>
-
-                                        <div className="card-content">
-                                            <h3 className="project-title">
-                                                {project.websitePreview?.title || project.hypothesis?.slice(0, 40) || 'Sin Título'}
-                                            </h3>
-                                            <p className="project-tagline">
-                                                {project.websitePreview?.tagline || 'Sin descripción'}
-                                            </p>
-                                        </div>
-
-                                        <div className="card-footer">
-                                            <div className="meta-info">
-                                                <Calendar size={14} />
-                                                <span>{formatDate(project.updatedAt)}</span>
-                                            </div>
-                                            <div className="open-indicator">
-                                                <ArrowRight size={16} />
-                                            </div>
-                                        </div>
-                                    </div >
-                                ))
-}
-                        </div >
+                        ))}
+                    </div>
                 ) : (
-    <div className="empty-state">
-        <h2>Bienvenido a VEXT</h2>
-        <p>Tu motor de análisis de viabilidad con IA.</p>
-        <button className="cta-btn" onClick={onNewProject}>
-            INICIAR ANÁLISIS
-        </button>
-    </div>
-)}
-            </main >
-        </div >
+                    <div className="empty-state">
+                        <h2>Bienvenido a VEXT</h2>
+                        <p>Tu motor de análisis de viabilidad con IA.</p>
+                        <button className="cta-btn" onClick={onNewProject}>
+                            INICIAR ANÁLISIS
+                        </button>
+                    </div>
+                )}
+            </main>
+        </div>
     );
 }
 
