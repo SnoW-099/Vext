@@ -54,7 +54,7 @@ You MUST respond with ONLY valid JSON. No markdown, no explanation, no code bloc
 
 CRITICAL: The tailwind_html must be a COMPLETE HTML document with the Tailwind CDN script tag. Dark mode. Mobile-first.`;
 
-export default async (request, context) => {
+exports.handler = async (event, context) => {
     // CORS headers
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -64,34 +64,37 @@ export default async (request, context) => {
     };
 
     // Handle preflight
-    if (request.method === 'OPTIONS') {
-        return new Response(null, { status: 200, headers });
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers, body: '' };
     }
 
-    if (request.method !== 'POST') {
-        return new Response(
-            JSON.stringify({ error: 'Method not allowed' }),
-            { status: 405, headers }
-        );
+    if (event.httpMethod !== 'POST') {
+        return {
+            statusCode: 405,
+            headers,
+            body: JSON.stringify({ error: 'Method not allowed' })
+        };
     }
 
     try {
-        const { hypothesis } = await request.json();
+        const { hypothesis } = JSON.parse(event.body);
 
         if (!hypothesis || hypothesis.trim().length < 10) {
-            return new Response(
-                JSON.stringify({ error: 'Hypothesis must be at least 10 characters' }),
-                { status: 400, headers }
-            );
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ error: 'Hypothesis must be at least 10 characters' })
+            };
         }
 
-        const GEMINI_API_KEY = Netlify.env.get('GEMINI_API_KEY');
+        const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
         if (!GEMINI_API_KEY) {
-            return new Response(
-                JSON.stringify({ error: 'API key not configured' }),
-                { status: 500, headers }
-            );
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({ error: 'API key not configured' })
+            };
         }
 
         // Call Gemini 2.0 Flash API
@@ -124,10 +127,11 @@ export default async (request, context) => {
         if (!response.ok) {
             const errorData = await response.text();
             console.error('Gemini API error:', errorData);
-            return new Response(
-                JSON.stringify({ error: 'AI service error', details: response.status }),
-                { status: 502, headers }
-            );
+            return {
+                statusCode: 502,
+                headers,
+                body: JSON.stringify({ error: 'AI service error', details: response.status })
+            };
         }
 
         const data = await response.json();
@@ -137,10 +141,11 @@ export default async (request, context) => {
 
         if (!aiContent) {
             console.error('No content in Gemini response:', data);
-            return new Response(
-                JSON.stringify({ error: 'Empty AI response' }),
-                { status: 500, headers }
-            );
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({ error: 'Empty AI response' })
+            };
         }
 
         // Parse the JSON response from Gemini
@@ -154,26 +159,25 @@ export default async (request, context) => {
         } catch (parseError) {
             console.error('JSON parse error:', parseError);
             console.error('Raw content:', aiContent);
-            return new Response(
-                JSON.stringify({ error: 'Failed to parse AI response', raw: aiContent }),
-                { status: 500, headers }
-            );
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({ error: 'Failed to parse AI response', raw: aiContent })
+            };
         }
 
-        return new Response(
-            JSON.stringify(parsedResponse),
-            { status: 200, headers }
-        );
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(parsedResponse)
+        };
 
     } catch (error) {
         console.error('Function error:', error);
-        return new Response(
-            JSON.stringify({ error: 'Internal server error', message: error.message }),
-            { status: 500, headers }
-        );
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ error: 'Internal server error', message: error.message })
+        };
     }
-};
-
-export const config = {
-    path: '/api/analyze'
 };
