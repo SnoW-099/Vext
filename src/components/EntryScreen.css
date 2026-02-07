@@ -88,7 +88,32 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-2xl);
+    gap: var(--space-xl);
+    /* Reduced gap */
+}
+
+.main-title {
+    font-size: 5rem;
+    /* Larger */
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    background: linear-gradient(to bottom, #fff, #888);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: -1rem;
+    /* Tighten up */
+}
+
+.subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent-neon);
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+    text-align: center;
+    margin-bottom: var(--space-md);
 }
 
 .tagline {
@@ -125,15 +150,16 @@
     padding: var(--space-lg);
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
+    /* More rounded corners */
     color: var(--text-primary);
     font-size: 1.1rem;
     /* Slightly larger text */
     resize: none;
     transition: border-color var(--transition-base), box-shadow var(--transition-base);
     min-height: 140px;
-    text-align: center;
-    /* Center text input */
+    text-align: left;
+    /* Left align text */
 }
 
 .hypothesis-input::placeholder {
@@ -163,23 +189,24 @@
     background: var(--accent-neon);
     color: var(--bg-primary);
     border: none;
-    border-radius: var(--radius-full);
-    /* Rounded pill shape */
+    border-radius: 9999px;
+    /* Fully rounded pill */
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: 800;
     cursor: pointer;
     transition: all var(--transition-fast);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     z-index: 5;
-    margin-top: var(--space-sm);
-    min-width: 200px;
+    margin-top: calc(var(--space-sm) * -1);
+    /* Pull up slightly closer */
+    min-width: 220px;
 }
 
 .scan-button:hover:not(:disabled),
 .scan-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.5);
 }
 
 .scan-button:disabled,
@@ -194,10 +221,11 @@
 /* Hint Text - Below the button */
 .hint-text {
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    opacity: 0.6;
-    margin-top: var(--space-lg);
+    opacity: 0.5;
+    margin-top: 0;
+    /* Tight spacing */
     text-align: center;
     width: 100%;
 }
