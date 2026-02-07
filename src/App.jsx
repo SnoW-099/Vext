@@ -1,38 +1,52 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import './App.css'
 import EntryScreen from './components/EntryScreen'
 import LoadingScreen from './components/LoadingScreen'
 import Workspace from './components/Workspace'
+import { analyzeHypothesis, getMockAnalysis } from './services/vextApi'
+
+// Set to true for local dev without API, false for production
+const USE_MOCK_API = import.meta.env.DEV && !import.meta.env.VITE_USE_REAL_API
 
 function App() {
   const [stage, setStage] = useState('entry') // 'entry' | 'loading' | 'results'
   const [hypothesis, setHypothesis] = useState('')
   const [analysisData, setAnalysisData] = useState(null)
+  const [error, setError] = useState(null)
+  const apiCallRef = useRef(null)
 
   const handleScan = (inputHypothesis) => {
     setHypothesis(inputHypothesis)
+    setError(null)
     setStage('loading')
+
+    // Start API call in parallel with loading animation
+    apiCallRef.current = USE_MOCK_API
+      ? Promise.resolve(getMockAnalysis(inputHypothesis))
+      : analyzeHypothesis(inputHypothesis)
   }
 
-  const handleLoadingComplete = () => {
-    // Simulated analysis data
-    setAnalysisData({
-      grade: 'A',
-      gradePercent: 87,
-      targeting: 'Young professionals aged 25-35 seeking productivity solutions',
-      psychology: ['Urgency', 'Social Proof', 'Authority'],
-      websitePreview: {
-        title: hypothesis.slice(0, 50) + '...',
-        tagline: 'Transform your workflow today',
-      }
-    })
-    setStage('results')
+  const handleLoadingComplete = async () => {
+    try {
+      // Wait for API call to complete
+      const data = await apiCallRef.current
+      setAnalysisData(data)
+      setStage('results')
+    } catch (err) {
+      console.error('Analysis failed:', err)
+      setError(err.message)
+      // Fall back to mock data on error
+      setAnalysisData(getMockAnalysis(hypothesis))
+      setStage('results')
+    }
   }
 
   const handleReset = () => {
     setStage('entry')
     setHypothesis('')
     setAnalysisData(null)
+    setError(null)
+    apiCallRef.current = null
   }
 
   return (
@@ -51,6 +65,7 @@ function App() {
           hypothesis={hypothesis}
           data={analysisData}
           onReset={handleReset}
+          error={error}
         />
       )}
     </div>

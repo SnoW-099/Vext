@@ -117,10 +117,15 @@ function Workspace({ hypothesis, data, onReset }) {
                             <div className="psychology-panel">
                                 <p className="panel-intro">Mental triggers identified for maximum conversion:</p>
                                 <div className="triggers-grid">
-                                    {data?.psychology?.map((trigger, i) => (
-                                        <div key={i} className="trigger-item">
-                                            <span className="trigger-dot" />
-                                            <span className="trigger-name">{trigger}</span>
+                                    {(data?.psychologyDetails || data?.psychology)?.map((item, i) => (
+                                        <div key={i} className="trigger-item-detailed">
+                                            <div className="trigger-header">
+                                                <span className="trigger-dot" />
+                                                <span className="trigger-name">{typeof item === 'string' ? item : item.trigger}</span>
+                                            </div>
+                                            {item.explanation && (
+                                                <p className="trigger-explanation">{item.explanation}</p>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -258,21 +263,26 @@ function Workspace({ hypothesis, data, onReset }) {
             {/* Page 3: Preview */}
             <div className={`mobile-page ${mobilePage === 'preview' ? 'active' : ''}`}>
                 <div className="mobile-preview-content">
-                    <div className="phone-frame-large">
-                        <div className="phone-notch" />
-                        <div className="phone-screen">
-                            <div className="preview-hero">
-                                <h2 className="preview-title">{data?.websitePreview?.title || 'Your Business'}</h2>
-                                <p className="preview-tagline">{data?.websitePreview?.tagline}</p>
-                            </div>
-                            <div className="preview-image">AI Generated</div>
-                            <button className="preview-cta-btn">Get Started</button>
-                            <div className="preview-features">
-                                <span>✓ Fast Delivery</span>
-                                <span>✓ Premium Quality</span>
+                    {data?.websitePreview?.html ? (
+                        <iframe
+                            srcDoc={data.websitePreview.html}
+                            className="preview-iframe"
+                            title="Landing Page Preview"
+                            sandbox="allow-scripts"
+                        />
+                    ) : (
+                        <div className="phone-frame-large">
+                            <div className="phone-notch" />
+                            <div className="phone-screen">
+                                <div className="preview-hero">
+                                    <h2 className="preview-title">{data?.websitePreview?.title || 'Your Business'}</h2>
+                                    <p className="preview-tagline">{data?.websitePreview?.tagline}</p>
+                                </div>
+                                <div className="preview-image">AI Generated</div>
+                                <button className="preview-cta-btn">Get Started</button>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
 
