@@ -30,33 +30,7 @@ function Dashboard({ onNewProject, onLoadProject }) {
         });
     };
 
-    const DEMO_PROJECTS = [
-        {
-            id: 'demo-1',
-            isDemo: true,
-            grade: 'A',
-            hypothesis: 'Plataforma de alquiler de ropa de bebé por suscripción',
-            updatedAt: new Date().toISOString(),
-            websitePreview: {
-                title: 'BabyLife Loop',
-                tagline: 'Ropa premium para tu bebé, sin comprarla.'
-            }
-        },
-        {
-            id: 'demo-2',
-            isDemo: true,
-            grade: 'B',
-            hypothesis: 'Consultoría de ciberseguridad para PYMES remota',
-            updatedAt: new Date(Date.now() - 86400000).toISOString(),
-            websitePreview: {
-                title: 'SecureSmall Remote',
-                tagline: 'Protege tu negocio desde cualquier lugar.'
-            }
-        }
-    ];
-
-    // If projects exist, show them. If not, show DEMO projects to populate grid.
-    const displayProjects = projects.length > 0 ? projects : DEMO_PROJECTS;
+    // const displayProjects = projects.length > 0 ? projects : DEMO_PROJECTS; // Removed demo logic
 
     return (
         <div className="dashboard">
@@ -83,8 +57,8 @@ function Dashboard({ onNewProject, onLoadProject }) {
                         </div>
                     </div>
 
-                    {/* Content Cards (User Projects or Demos) */}
-                    {displayProjects.map((project) => (
+                    {/* Content Cards (User Projects) */}
+                    {projects.map((project) => (
                         <div
                             key={project.id}
                             className={`project-card ${project.isDemo ? 'demo-card' : ''}`}

@@ -64,54 +64,63 @@
     font-weight: 700;
 }
 
-/* === New Project CTA Card === */
+/* === New Project CTA Card (Minimalist) === */
 .project-card.new-project-cta {
-    background: rgba(0, 255, 136, 0.03);
-    border: 1px solid var(--accent-neon);
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    /* Subtle dashed border */
     align-items: center;
     justify-content: center;
     text-align: center;
     gap: var(--space-md);
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.05);
+    transition: all 0.2s ease;
 }
 
 .project-card.new-project-cta:hover {
-    transform: translateY(-4px);
-    background: rgba(0, 255, 136, 0.08);
-    box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--accent-neon);
+    /* Only neon on hover */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
 }
 
 .cta-icon-wrapper {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    /* Smaller icon wrapper */
+    height: 48px;
     border-radius: 50%;
-    background: var(--accent-neon);
-    color: var(--bg-primary);
-    /* Dark icon on bright bg */
+    background: rgba(255, 255, 255, 0.05);
+    /* Subtle bg */
+    color: var(--text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
-    transition: transform 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .project-card.new-project-cta:hover .cta-icon-wrapper {
+    background: var(--accent-neon);
+    color: var(--bg-primary);
     transform: scale(1.1);
-    box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
 }
 
 .cta-content h3 {
-    color: var(--accent-neon);
-    font-size: 1.1rem;
-    font-weight: 700;
+    color: var(--text-primary);
+    /* Normal text color */
+    font-size: 1rem;
+    font-weight: 600;
     margin-bottom: var(--space-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.02em;
+}
+
+.project-card.new-project-cta:hover .cta-content h3 {
+    color: var(--accent-neon);
 }
 
 .cta-content p {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 /* === Demo Card Styling === */
