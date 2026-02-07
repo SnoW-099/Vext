@@ -9,11 +9,13 @@ import {
     ChevronRight,
     Eye,
     RotateCcw,
-    Save
+    Save,
+    User
 } from 'lucide-react'
 
 import { refineHypothesis } from '../services/vextApi'
 import { projectService } from '../services/projectService'
+import Typewriter from './Typewriter'
 
 function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
     const [data, setData] = useState(initialData)
@@ -248,8 +250,23 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
 
                         {activePanel === 'targeting' && (
                             <div className="targeting-panel">
-                                <p className="panel-intro">Perfil de audiencia principal:</p>
-                                <p className="target-audience">{data?.targeting}</p>
+                                <p className="panel-intro">Perfil de audiencia neural:</p>
+                                <div className="audience-card">
+                                    <div className="audience-header">
+                                        <div className="audience-icon-wrapper">
+                                            <Target size={24} className="audience-icon" />
+                                        </div>
+                                        <div className="audience-meta">
+                                            <span className="audience-label mono">TARGET_ID_001</span>
+                                            <span className="audience-status">
+                                                <span className="status-dot-small" /> MATCHING
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="audience-content mono">
+                                        <Typewriter text={data?.targeting || 'Analizando segmentos de mercado...'} speed={15} />
+                                    </div>
+                                </div>
                             </div>
                         )}
 
