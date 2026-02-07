@@ -91,22 +91,6 @@ function Dashboard({ onNewProject, onLoadProject }) {
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Saved Projects */ }
-                            {
-                                projects.map((project) => (
-                                    <div
-                                        key={project.id}
-                                        className="project-card"
-                                        onClick={() => onLoadProject(project)}
-                                    >
-                                        <div className="card-top">
-                                            <span className={`grade-badge grade-${project.grade || 'C'}`}>
-                                                {project.grade || 'C'}
-                                            </span>
-                                            <button
-                                                className="delete-btn"
-                                                onClick={(e) => handleDelete(e, project.id)}
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -130,21 +114,21 @@ function Dashboard({ onNewProject, onLoadProject }) {
                                                 <ArrowRight size={16} />
                                             </div>
                                         </div>
-                                    </div>
+                                    </div >
                                 ))
-                            }
-                        </div>
+}
+                        </div >
                 ) : (
-                    <div className="empty-state">
-                        <h2>Bienvenido a VEXT</h2>
-                        <p>Tu motor de análisis de viabilidad con IA.</p>
-                        <button className="cta-btn" onClick={onNewProject}>
-                            INICIAR ANÁLISIS
-                        </button>
-                    </div>
-                )}
-            </main>
-        </div>
+    <div className="empty-state">
+        <h2>Bienvenido a VEXT</h2>
+        <p>Tu motor de análisis de viabilidad con IA.</p>
+        <button className="cta-btn" onClick={onNewProject}>
+            INICIAR ANÁLISIS
+        </button>
+    </div>
+)}
+            </main >
+        </div >
     );
 }
 
