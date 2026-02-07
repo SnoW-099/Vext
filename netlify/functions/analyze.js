@@ -1,5 +1,5 @@
 // Netlify Function: VEXT Analysis Engine
-// Calls OpenAI GPT-4o-mini with the VEXT system prompt
+// Calls Gemini 1.5 Flash with the VEXT system prompt
 
 const VEXT_SYSTEM_PROMPT = `**ROLE:**
 You are VEXT, a high-performance Tactical Conversion Architect. You don't just build websites; you engineer digital sales engines. Your output is a combination of psychological warfare, elite copywriting, and minimalist modern design.
@@ -87,9 +87,9 @@ exports.handler = async (event, context) => {
             };
         }
 
-        const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+        const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-        if (!OPENAI_API_KEY) {
+        if (!GEMINI_API_KEY) {
             return {
                 statusCode: 500,
                 headers,
@@ -97,50 +97,50 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Call OpenAI API
-        console.log('Calling OpenAI GPT-4o-mini...');
+        // Call Gemini 1.5 Flash API (stable model)
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+        console.log('Calling Gemini:', geminiUrl.replace(GEMINI_API_KEY, 'KEY_HIDDEN'));
 
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch(geminiUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${OPENAI_API_KEY}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini',
-                messages: [
+                contents: [
                     {
-                        role: 'system',
-                        content: VEXT_SYSTEM_PROMPT
-                    },
-                    {
-                        role: 'user',
-                        content: `Analyze this business hypothesis and generate the full VEXT strategy:\n\n"${hypothesis}"`
+                        parts: [
+                            {
+                                text: `${VEXT_SYSTEM_PROMPT}\n\n---\n\nAnalyze this business hypothesis and generate the full VEXT strategy:\n\n"${hypothesis}"`
+                            }
+                        ]
                     }
                 ],
-                temperature: 0.7,
-                max_tokens: 4096,
-                response_format: { type: "json_object" }
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 8192,
+                    responseMimeType: "application/json"
+                }
             })
         });
 
         if (!response.ok) {
             const errorData = await response.text();
-            console.error('OpenAI API error:', response.status, errorData);
+            console.error('Gemini API error:', response.status, errorData);
             return {
                 statusCode: 502,
                 headers,
-                body: JSON.stringify({ error: 'AI service error', status: response.status, openaiError: errorData })
+                body: JSON.stringify({ error: 'AI service error', status: response.status, geminiError: errorData })
             };
         }
 
         const data = await response.json();
 
-        // Extract the content from OpenAI response
-        const aiContent = data.choices?.[0]?.message?.content;
+        // Extract the text from Gemini response
+        const aiContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
         if (!aiContent) {
-            console.error('No content in OpenAI response:', data);
+            console.error('No content in Gemini response:', data);
             return {
                 statusCode: 500,
                 headers,
@@ -148,10 +148,14 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Parse the JSON response
+        // Parse the JSON response from Gemini
         let parsedResponse;
         try {
-            parsedResponse = JSON.parse(aiContent);
+            // Extract JSON if wrapped in code blocks
+            const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/) ||
+                aiContent.match(/```\s*([\s\S]*?)\s*```/);
+            const jsonString = jsonMatch ? jsonMatch[1] : aiContent;
+            parsedResponse = JSON.parse(jsonString.trim());
         } catch (parseError) {
             console.error('JSON parse error:', parseError);
             console.error('Raw content:', aiContent);
