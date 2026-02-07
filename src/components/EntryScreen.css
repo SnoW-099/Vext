@@ -118,64 +118,68 @@
 .input-wrapper {
     width: 100%;
     position: relative;
-    /* Removed flex-direction column to allow absolute positioning of button inside */
 }
 
 .hypothesis-input {
     width: 100%;
     padding: var(--space-lg);
-    padding-bottom: calc(var(--space-lg) + 50px);
-    /* Space for button */
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 1.1rem;
+    /* Slightly larger text */
     resize: none;
     transition: border-color var(--transition-base), box-shadow var(--transition-base);
-    min-height: 160px;
-    /* Taller to accommodate button */
+    min-height: 140px;
+    text-align: center;
+    /* Center text input */
 }
 
 .hypothesis-input::placeholder {
     color: var(--text-muted);
+    opacity: 0.5;
 }
 
 .hypothesis-input:focus {
     outline: none;
     border-color: var(--accent-neon);
     box-shadow: 0 0 0 1px var(--accent-neon-glow);
-    /* Subtler glow */
 }
 
-/* Scan Button - Positioned INSIDE input, bottom right */
+/* Scan Button - Centered below input */
 .scan-button,
 .scan-btn {
-    position: absolute;
-    bottom: var(--space-md);
-    right: var(--space-md);
+    position: relative;
+    /* Reset formatting */
+    bottom: auto;
+    right: auto;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-md);
-    padding: var(--space-sm) var(--space-lg);
+    padding: var(--space-md) var(--space-2xl);
+    /* Larger padding */
     background: var(--accent-neon);
     color: var(--bg-primary);
     border: none;
-    border-radius: var(--radius-sm);
-    font-size: 0.85rem;
+    border-radius: var(--radius-full);
+    /* Rounded pill shape */
+    font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
     transition: all var(--transition-fast);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     z-index: 5;
+    margin-top: var(--space-sm);
+    min-width: 200px;
 }
 
 .scan-button:hover:not(:disabled),
 .scan-btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.4);
 }
 
 .scan-button:disabled,
@@ -184,18 +188,18 @@
     cursor: not-allowed;
     background: var(--text-muted);
     box-shadow: none;
+    transform: none;
 }
 
-/* Hint Text - Below the input wrapper */
+/* Hint Text - Below the button */
 .hint-text {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
-    opacity: 0.7;
-    margin-top: var(--space-md);
-    text-align: left;
+    opacity: 0.6;
+    margin-top: var(--space-lg);
+    text-align: center;
     width: 100%;
-    padding-left: var(--space-xs);
 }
 
 .hint-label {

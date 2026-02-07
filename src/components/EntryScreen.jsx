@@ -74,17 +74,17 @@ function EntryScreen({ onScan }) {
             <main className="entry-main">
                 <div className="entry-content">
                     <h1 className="main-title">
-                        VEXT<span className="accent">.AI</span>
+                        VEXT
                     </h1>
 
                     <p className="subtitle">
-                        VALIDACIÓN DE MERCADO Y ARQUITECTURA DE CONVERSIÓN
+                        Escribe una idea de negocio
                     </p>
 
                     <div className="input-wrapper">
                         <textarea
                             className="hypothesis-input"
-                            placeholder="Describe tu idea de negocio (ej: 'Servicio de limpieza de sneakers premium a domicilio')..."
+                            placeholder="Ej: 'Servicio de limpieza de sneakers premium a domicilio'..."
                             value={hypothesis}
                             onChange={(e) => setHypothesis(e.target.value)}
                             onKeyDown={(e) => {
@@ -94,21 +94,20 @@ function EntryScreen({ onScan }) {
                                 }
                             }}
                         />
+                    </div>
 
-                        <button
-                            className="scan-btn"
-                            onClick={handleSubmit}
-                            disabled={!hypothesis.trim()}
-                        >
-                            ANALIZAR
-                        </button>
+                    <button
+                        className="scan-btn"
+                        onClick={handleSubmit}
+                        disabled={!hypothesis.trim()}
+                    >
+                        ANALIZAR
+                    </button>
 
-                        <div className="hint-text">
-                            <span className="hint-label">PRUEBA:</span>
-                            <span className="hint-example">
-                                "{currentExample}<span className="typing-cursor">|</span>"
-                            </span>
-                        </div>
+                    <div className="hint-text">
+                        <span className="hint-example">
+                            "{currentExample}<span className="typing-cursor">|</span>"
+                        </span>
                     </div>
                 </div>
             </main>
