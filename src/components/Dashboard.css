@@ -344,12 +344,31 @@
 .status-chip {
     font-family: 'Space Mono', monospace;
     font-size: 0.65rem;
-    color: var(--accent-neon);
-    border: 1px solid rgba(0, 255, 136, 0.2);
     padding: 2px 6px;
     border-radius: 4px;
     letter-spacing: 0.05em;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+}
+
+.status-chip.grade-A,
+.status-chip.grade-B {
+    color: var(--accent-neon);
+    border-color: rgba(0, 255, 136, 0.3);
     background: rgba(0, 255, 136, 0.05);
+}
+
+.status-chip.grade-C {
+    color: var(--warning);
+    border-color: rgba(255, 170, 0, 0.3);
+    background: rgba(255, 170, 0, 0.05);
+}
+
+.status-chip.grade-D,
+.status-chip.grade-F {
+    color: var(--danger);
+    border-color: rgba(255, 68, 68, 0.3);
+    background: rgba(255, 68, 68, 0.05);
 }
 
 .grade-badge.grade-C {

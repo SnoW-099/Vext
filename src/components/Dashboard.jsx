@@ -50,20 +50,22 @@ function Dashboard({ onNewProject, onLoadProject }) {
         return `ID_${num}`;
     };
 
-    const getProjectStatus = (id) => {
-        // Mock status based on ID for consistency
-        const statuses = ['VALIDANDO', 'PROTOTIPO', 'INVESTIGACIÓN'];
-        // Use a simple hash of the ID to pick a status
-        const charCode = id.toString().charCodeAt(0) || 0;
-        return statuses[charCode % statuses.length];
+    const getProjectGradeLabel = (grade) => {
+        if (!grade) return 'PENDIENTE';
+        return `GRADO ${grade}`;
     };
 
     const getProjectCategory = (id) => {
-        // Mock category
+        // Mock category for visual variety until available in backend
         const categories = ['SAAS', 'E-COMMERCE', 'APP MÓVIL', 'MARKETPLACE'];
         const charCode = id.toString().charCodeAt(0) || 0;
         return categories[(charCode + 1) % categories.length];
     };
+
+    // Calculate Success Rate based on Grade A or B
+    const successRate = projects.length > 0
+        ? Math.round((projects.filter(p => p.grade === 'A' || p.grade === 'B').length / projects.length) * 100)
+        : 0;
 
     const StatsBar = () => (
         <div className="stats-bar">
@@ -73,13 +75,13 @@ function Dashboard({ onNewProject, onLoadProject }) {
             </div>
             <div className="stat-item">
                 <span className="stat-label">TASA DE ÉXITO</span>
-                <span className="stat-value">85%</span>
+                <span className="stat-value">{successRate}%</span>
             </div>
             <div className="stat-item">
-                <span className="stat-label">ESTADO DEL SISTEMA</span>
+                <span className="stat-label">ESTADO IA</span>
                 <div className="status-indicator">
                     <div className="status-dot"></div>
-                    <span className="stat-value-text">OPERATIVO</span>
+                    <span className="stat-value-text">ONLINE</span>
                 </div>
             </div>
         </div>
@@ -123,8 +125,8 @@ function Dashboard({ onNewProject, onLoadProject }) {
                                         <span className="id-badge mono">
                                             {formatProjectId(project.id)}
                                         </span>
-                                        <span className="status-chip mono">
-                                            {getProjectStatus(project.id)}
+                                        <span className={`status-chip mono grade-${project.grade || 'C'}`}>
+                                            {getProjectGradeLabel(project.grade)}
                                         </span>
                                     </div>
                                     <button
