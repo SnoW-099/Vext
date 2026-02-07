@@ -73,15 +73,15 @@ function EntryScreen({ onScan }) {
             {/* Main Content */}
             <main className="entry-main">
                 <div className="entry-content">
-                    <h1 className="main-title">
+                    <h1 className="main-title animate-fade-in">
                         VEXT
                     </h1>
 
-                    <p className="subtitle">
+                    <p className="subtitle animate-slide-up delay-100">
                         Escribe una idea de negocio
                     </p>
 
-                    <div className="input-wrapper">
+                    <div className="input-wrapper animate-slide-up delay-200">
                         <textarea
                             className="hypothesis-input"
                             placeholder="Ej: 'Servicio de limpieza de sneakers premium a domicilio'..."
@@ -97,14 +97,14 @@ function EntryScreen({ onScan }) {
                     </div>
 
                     <button
-                        className="scan-btn"
+                        className="scan-btn animate-scale-in delay-300"
                         onClick={handleSubmit}
                         disabled={!hypothesis.trim()}
                     >
                         ANALIZAR
                     </button>
 
-                    <div className="hint-text">
+                    <div className="hint-text animate-fade-in delay-500">
                         <span className="hint-example">
                             "{currentExample}<span className="typing-cursor">|</span>"
                         </span>

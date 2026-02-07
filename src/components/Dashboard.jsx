@@ -68,7 +68,7 @@ function Dashboard({ onNewProject, onLoadProject }) {
         : 0;
 
     const StatsBar = () => (
-        <div className="stats-bar">
+        <div className="stats-bar animate-slide-down">
             <div className="stat-item">
                 <span className="stat-label">PROYECTOS ACTIVOS</span>
                 <span className="stat-value">{projects.length}</span>
@@ -89,7 +89,7 @@ function Dashboard({ onNewProject, onLoadProject }) {
 
     return (
         <div className="dashboard">
-            <header className="dashboard-header">
+            <header className="dashboard-header animate-fade-in">
                 <div className="header-brand-column">
                     <div className="brand-row">
                         <img src="/favicon/favicon.svg" alt="VEXT" className="logo-icon" />
@@ -103,7 +103,10 @@ function Dashboard({ onNewProject, onLoadProject }) {
                 {projects.length > 0 ? (
                     <div className="projects-grid">
                         {/* New Project CTA - High Visibility (Grid Version) */}
-                        <div className="project-card new-project-cta" onClick={onNewProject}>
+                        <div
+                            className="project-card new-project-cta animate-scale-in"
+                            onClick={onNewProject}
+                        >
                             <div className="cta-icon-wrapper">
                                 <Plus size={32} />
                             </div>
@@ -114,10 +117,11 @@ function Dashboard({ onNewProject, onLoadProject }) {
                         </div>
 
                         {/* Content Cards (User Projects) */}
-                        {projects.map((project) => (
+                        {projects.map((project, index) => (
                             <div
                                 key={project.id}
-                                className="project-card"
+                                className="project-card animate-slide-up"
+                                style={{ animationDelay: `${(index + 1) * 100}ms` }}
                                 onClick={() => onLoadProject(project)}
                             >
                                 <div className="card-top">
