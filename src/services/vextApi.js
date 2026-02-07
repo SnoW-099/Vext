@@ -5,13 +5,37 @@ const API_BASE = import.meta.env.DEV
     ? 'http://localhost:8888'
     : '';
 
+const MAX_RETRIES = 2;
+const RETRY_DELAY = 1000; // ms
+
+async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
+    try {
+        const response = await fetch(url, options);
+
+        // Retry on Gateway errors (502, 504)
+        if ((response.status === 502 || response.status === 504) && retries > 0) {
+            console.warn(`[VEXT API] Gateway error ${response.status}. Retrying... (${retries} left)`);
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (MAX_RETRIES - retries + 1)));
+            return fetchWithRetry(url, options, retries - 1);
+        }
+
+        return response;
+    } catch (error) {
+        if (retries > 0) {
+            console.warn(`[VEXT API] Network error. Retrying... (${retries} left)`, error);
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+            return fetchWithRetry(url, options, retries - 1);
+        }
+        throw error;
+    }
+}
+
 export async function analyzeHypothesis(hypothesis) {
-    console.log('[VEXT API] Starting analysis...', { hypothesis, API_BASE });
+    console.log('[VEXT API] Starting analysis...', { hypothesis });
 
     const url = `${API_BASE}/.netlify/functions/analyze`;
-    console.log('[VEXT API] Calling:', url);
 
-    const response = await fetch(url, {
+    const response = await fetchWithRetry(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -19,11 +43,8 @@ export async function analyzeHypothesis(hypothesis) {
         body: JSON.stringify({ hypothesis })
     });
 
-    console.log('[VEXT API] Response status:', response.status);
-
     if (!response.ok) {
-        const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('[VEXT API] Error:', error);
+        const error = await response.json().catch(() => ({ error: 'Unknown API error' }));
         throw new Error(error.error || `API Error: ${response.status}`);
     }
 
@@ -47,18 +68,16 @@ export async function analyzeHypothesis(hypothesis) {
         viralKit: {
             hooks: data.viral_kit?.hooks || [],
             scripts: data.viral_kit?.scripts || []
-        },
-        raw: data // Keep raw response for debugging
+        }
     };
 }
 
 const SYSTEM_PROMPT = `
-You are VEXT, an elite AI web architect. Generate a high-conversion Single Page Application (SPA).
-DESIGN RULES:
-1. Premium Aesthetic: Dark mode or high-contrast light. Use gradients, glassmorphism.
-2. Navigation: Use anchor links (#features, #pricing). NO external pages.
-3. Content: Hero, Features (Grid), Testimonials, Pricing, FAQ, Footer.
-4. Interactive: Hover effects on all buttons/cards.
+You are VEXT, an elite AI web architect.
+SPEED RULE: Be concise. Generate high-impact code only.
+DESIGN: Dark mode, glassmorphism, Tailwind CSS. 
+SPA: Use anchor links (#hero, #features). NO side pages.
+STRUCTURE: Hero, Features, Social Proof, Pricing, Footer.
 `;
 
 function getGradeExplanation(score) {
@@ -71,32 +90,35 @@ function getGradeExplanation(score) {
 }
 
 export async function refineHypothesis(currentHtml, instruction, context) {
-    console.log('[VEXT API] Starting refinement...', { instruction });
+    console.log('[VEXT API] Refining...', { instruction });
     const url = `${API_BASE}/.netlify/functions/analyze`;
 
-    const response = await fetch(url, {
+    const response = await fetchWithRetry(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             hypothesis: instruction, // Treated as instruction in refine mode
             mode: 'refine',
             currentHtml,
-            context
+            context,
+            system_prompt_addon: "Respond faster. Minimize unnecessary HTML bloat."
         })
     });
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => ({ error: 'Unknown' }));
-        console.error('[VEXT API] Refinement failed:', response.status, errorBody);
-        throw new Error(`Refinement Error: ${response.status} - ${errorBody.details || errorBody.error || 'Unknown'}`);
+        throw new Error(`Error ${response.status}: ${errorBody.error || 'Timeout'}`);
     }
 
     const data = await response.json();
+    const newGradePercent = data.analysis?.grade || context.gradePercent;
+
     return {
         // Merge with existing data structure where possible
-        grade: data.analysis?.grade || context.grade,
-        gradePercent: data.analysis?.grade || context.gradePercent,
-        chatResponse: data.chat_response || 'Cambios aplicados.',
+        grade: calculateGradeLetter(newGradePercent), // FIX: Always return letter
+        gradePercent: newGradePercent,
+        gradeExplanation: data.analysis?.grade_explanation || context.gradeExplanation,
+        chatResponse: data.chat_response || 'Cambios aplicados con éxito.',
         websitePreview: {
             title: data.landing_page?.headline || context.title,
             tagline: data.landing_page?.subheadline || context.tagline,

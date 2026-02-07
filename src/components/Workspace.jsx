@@ -109,6 +109,7 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                 ...data,
                 grade: refinedData.grade,
                 gradePercent: refinedData.gradePercent,
+                gradeExplanation: refinedData.gradeExplanation || data.gradeExplanation, // Keep or update explanation
                 websitePreview: refinedData.websitePreview
             };
             setData(nextData);
@@ -117,23 +118,8 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
             // We save directly here to ensure we use the fresh 'nextData'
             // instead of waiting for state update or reusing handleSave (stale state)
             try {
-                const projectToSave = {
-                    ...currentProject,
-                    id: projectId,
-                    hypothesis: hypothesis || nextData.websitePreview.title,
-                    grade: nextData.grade,
-                    gradePercent: nextData.gradePercent,
-                    gradeExplanation: nextData.gradeExplanation,
-                    strategy: nextData.strategy,
-                    websitePreview: nextData.websitePreview,
-                    psychology: nextData.psychologyDetails || nextData.psychology,
-                    targeting: nextData.targeting,
-                    updatedAt: new Date().toISOString()
-                };
-                const savedProject = projectService.save(projectToSave);
-                setProjectId(savedProject.id);
-                setHasUnsavedChanges(false);
-                // No chat notification for silent auto-save
+                // Use the new handleSave with silent parameter
+                await handleSave(true);
             } catch (err) {
                 console.error('Auto-save failed:', err);
             }
@@ -145,8 +131,12 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
 
         } catch (error) {
             console.error(error);
+            const errorMsg = error.message?.includes('504')
+                ? 'Server is under high load. Retrying usually works...'
+                : 'Connection issue. Please try again.';
+
             setChatHistory(prev => prev.map(msg =>
-                msg.isLoading ? { role: 'ai', content: 'Connection lost. Refinement failed.' } : msg
+                msg.isLoading ? { role: 'ai', content: errorMsg } : msg
             ));
         } finally {
             setIsRefining(false);
