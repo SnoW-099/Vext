@@ -66,7 +66,9 @@ export async function refineHypothesis(currentHtml, instruction, context) {
     });
 
     if (!response.ok) {
-        throw new Error(`Refinement Error: ${response.status}`);
+        const errorBody = await response.json().catch(() => ({ error: 'Unknown' }));
+        console.error('[VEXT API] Refinement failed:', response.status, errorBody);
+        throw new Error(`Refinement Error: ${response.status} - ${errorBody.details || errorBody.error || 'Unknown'}`);
     }
 
     const data = await response.json();
