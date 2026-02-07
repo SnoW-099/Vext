@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import './EntryScreen.css'
 
 const EXAMPLES = [
-    'A subscription box for artisan coffee lovers',
-    'An AI fitness coach for busy professionals',
-    'A marketplace for handmade eco-friendly products',
-    'A language learning app using music lyrics',
-    'A pet services platform connecting owners with walkers'
+    'Una caja de suscripción para amantes del café artesanal',
+    'Un entrenador de fitness con IA para profesionales ocupados',
+    'Un marketplace de productos ecológicos hechos a mano',
+    'Una app para aprender idiomas con letras de canciones',
+    'Una plataforma que conecta dueños de mascotas con paseadores'
 ];
 
 function EntryScreen({ onScan }) {

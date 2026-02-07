@@ -118,6 +118,9 @@
 .input-wrapper {
     width: 100%;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
 }
 
 .hypothesis-input {
@@ -130,6 +133,7 @@
     font-size: 1rem;
     resize: none;
     transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    min-height: 120px;
 }
 
 .hypothesis-input::placeholder {
@@ -142,111 +146,53 @@
     box-shadow: 0 0 0 3px var(--accent-neon-glow);
 }
 
-/* Corner Decorations */
-.input-decoration {
-    position: absolute;
-    inset: -4px;
-    pointer-events: none;
-}
-
-.decoration-corner {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border: 1px solid var(--text-muted);
-}
-
-.decoration-corner.tl {
-    top: 0;
-    left: 0;
-    border-right: none;
-    border-bottom: none;
-}
-
-.decoration-corner.tr {
-    top: 0;
-    right: 0;
-    border-left: none;
-    border-bottom: none;
-}
-
-.decoration-corner.bl {
-    bottom: 0;
-    left: 0;
-    border-right: none;
-    border-top: none;
-}
-
-.decoration-corner.br {
-    bottom: 0;
-    right: 0;
-    border-left: none;
-    border-top: none;
-}
-
-/* Scan Button */
-.scan-button {
+/* Scan Button - Positioned below input, aligned right */
+.scan-button,
+.scan-btn {
+    /* Handle both class names used in code */
+    align-self: flex-end;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-md);
-    padding: var(--space-md) var(--space-xl);
-    background: transparent;
-    border: 2px solid var(--text-primary);
+    padding: var(--space-sm) var(--space-xl);
+    background: var(--accent-neon);
+    color: var(--bg-primary);
+    border: none;
     border-radius: var(--radius-sm);
-    color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all var(--transition-fast);
-    position: relative;
-    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 120px;
 }
 
-.scan-button::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--accent-neon);
-    transform: translateX(-101%);
-    transition: transform var(--transition-fast);
+.scan-button:hover:not(:disabled),
+.scan-btn:hover:not(:disabled) {
+    box-shadow: 0 0 15px var(--accent-neon-glow);
+    transform: translateY(-1px);
 }
 
-.scan-button:hover:not(:disabled)::before,
-.scan-button.hovered:not(:disabled)::before {
-    transform: translateX(0);
-}
-
-.scan-text,
-.scan-arrow {
-    position: relative;
-    z-index: 1;
-    transition: color var(--transition-fast);
-}
-
-.scan-button:hover:not(:disabled) .scan-text,
-.scan-button:hover:not(:disabled) .scan-arrow,
-.scan-button.hovered:not(:disabled) .scan-text,
-.scan-button.hovered:not(:disabled) .scan-arrow {
-    color: var(--bg-primary);
-}
-
-.scan-button:disabled {
-    opacity: 0.4;
+.scan-button:disabled,
+.scan-btn:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
+    background: var(--text-muted);
 }
 
-.scan-arrow {
-    font-size: 1.2rem;
-    transition: transform var(--transition-fast), color var(--transition-fast);
-}
-
-.scan-button:hover:not(:disabled) .scan-arrow {
-    transform: translateX(4px);
-}
-
-/* Hint */
-.hint {
+/* Hint Text */
+.hint-text {
+    font-family: var(--font-mono);
     font-size: 0.8rem;
-    opacity: 0.6;
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+.hint-label {
+    color: var(--accent-neon);
+    margin-right: var(--space-sm);
 }
 
 /* Typing Cursor Animation */

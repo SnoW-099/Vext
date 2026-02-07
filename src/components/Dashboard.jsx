@@ -39,61 +39,102 @@ function Dashboard({ onNewProject, onLoadProject }) {
                 </div>
                 <button className="new-project-btn" onClick={onNewProject}>
                     <Plus size={18} />
-                    <span className="mono">NUERO ANÁLISIS</span>
+                    <span className="mono">NUEVO ANÁLISIS</span>
                 </button>
             </header>
 
             <main className="dashboard-content">
-                <div className="projects-grid">
-                    {/* New Project Card */}
-                    <div className="project-card new-project" onClick={onNewProject}>
-                        <div className="card-icon">+</div>
-                        <h3>Nuevo Proyecto</h3>
-                        <p>Comenzar análisis</p>
-                    </div>
-
-                    {/* Saved Projects */}
-                    {projects.map((project) => (
-                        <div
-                            key={project.id}
-                            className="project-card"
-                            onClick={() => onLoadProject(project)}
-                        >
-                            <div className="card-top">
-                                <span className={`grade-badge grade-${project.grade || 'C'}`}>
-                                    {project.grade || 'C'}
-                                </span>
-                                <button
-                                    className="delete-btn"
-                                    onClick={(e) => handleDelete(e, project.id)}
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-
-                            <div className="card-content">
-                                <h3 className="project-title">
-                                    {project.websitePreview?.title || project.hypothesis?.slice(0, 40) || 'Sin Título'}
-                                </h3>
-                                <p className="project-tagline">
-                                    {project.websitePreview?.tagline || 'Sin descripción'}
-                                </p>
-                            </div>
-
-                            <div className="card-footer">
-                                <div className="meta-info">
-                                    <Calendar size={14} />
-                                    <span>{formatDate(project.updatedAt)}</span>
-                                </div>
-                                <div className="open-indicator">
-                                    <ArrowRight size={16} />
-                                </div>
-                            </div>
+                {projects.length > 0 ? (
+                    <div className="projects-grid">
+                        {/* New Project Card - Only show in grid if we have projects */}
+                        <div className="project-card new-project" onClick={onNewProject}>
+                            <div className="card-icon">+</div>
+                            <h3>Nuevo Proyecto</h3>
+                            <p>Comenzar análisis</p>
                         </div>
-                    ))}
-                </div>
 
-                {projects.length === 0 && (
+                        {/* Saved Projects */}
+                        {projects.map((project) => (
+                            <div
+                                key={project.id}
+                                className="project-card"
+                                onClick={() => onLoadProject(project)}
+                            >
+                                <div className="card-top">
+                                    <span className={`grade-badge grade-${project.grade || 'C'}`}>
+                                        {project.grade || 'C'}
+                                    </span>
+                                    <button
+                                        className="delete-btn"
+                                        onClick={(e) => handleDelete(e, project.id)}
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+
+                                <div className="card-content">
+                                    <h3 className="project-title">
+                                        {project.websitePreview?.title || project.hypothesis?.slice(0, 40) || 'Sin Título'}
+                                    </h3>
+                                    <p className="project-tagline">
+                                        {project.websitePreview?.tagline || 'Sin descripción'}
+                                    </p>
+                                </div>
+
+                                <div className="card-footer">
+                                    <div className="meta-info">
+                                        <Calendar size={14} />
+                                        <span>{formatDate(project.updatedAt)}</span>
+                                    </div>
+                                    <div className="open-indicator">
+                                        <ArrowRight size={16} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Saved Projects */ }
+                            {
+                                projects.map((project) => (
+                                    <div
+                                        key={project.id}
+                                        className="project-card"
+                                        onClick={() => onLoadProject(project)}
+                                    >
+                                        <div className="card-top">
+                                            <span className={`grade-badge grade-${project.grade || 'C'}`}>
+                                                {project.grade || 'C'}
+                                            </span>
+                                            <button
+                                                className="delete-btn"
+                                                onClick={(e) => handleDelete(e, project.id)}
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+
+                                        <div className="card-content">
+                                            <h3 className="project-title">
+                                                {project.websitePreview?.title || project.hypothesis?.slice(0, 40) || 'Sin Título'}
+                                            </h3>
+                                            <p className="project-tagline">
+                                                {project.websitePreview?.tagline || 'Sin descripción'}
+                                            </p>
+                                        </div>
+
+                                        <div className="card-footer">
+                                            <div className="meta-info">
+                                                <Calendar size={14} />
+                                                <span>{formatDate(project.updatedAt)}</span>
+                                            </div>
+                                            <div className="open-indicator">
+                                                <ArrowRight size={16} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                        </div>
+                ) : (
                     <div className="empty-state">
                         <h2>Bienvenido a VEXT</h2>
                         <p>Tu motor de análisis de viabilidad con IA.</p>
