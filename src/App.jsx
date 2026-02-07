@@ -41,12 +41,9 @@ function App() {
   const handleLoadProject = (project) => {
     setCurrentProject(project)
     setHypothesis(project.hypothesis || '')
-    setAnalysisData({
-      grade: project.grade,
-      gradePercent: project.gradePercent,
-      websitePreview: project.websitePreview,
-      psychology: project.psychology,
-    })
+    // Pass ALL project data to analysisData, not just a subset
+    // This fixes the missing 'targeting' bug
+    setAnalysisData({ ...project })
     startTransition('results')
   }
 
