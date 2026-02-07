@@ -37,10 +37,6 @@ function Dashboard({ onNewProject, onLoadProject }) {
                     <span className="logo-mark mono">VEXT</span>
                     <span className="logo-text mono">PROYECTOS</span>
                 </div>
-                <button className="new-project-btn" onClick={onNewProject}>
-                    <Plus size={18} />
-                    <span className="mono">NUEVO ANÁLISIS</span>
-                </button>
             </header>
 
             <main className="dashboard-content">

@@ -6,6 +6,27 @@
     padding: var(--space-xl);
     display: flex;
     flex-direction: column;
+    position: relative;
+    /* For grid background */
+}
+
+/* Subtle Grid Background - Copied from EntryScreen but adjusted */
+.dashboard::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.dashboard-header,
+.dashboard-content {
+    position: relative;
+    z-index: 1;
 }
 
 .dashboard-header {
