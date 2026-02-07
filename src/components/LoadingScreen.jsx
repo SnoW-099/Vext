@@ -51,7 +51,7 @@ function LoadingScreen({ hypothesis, onComplete }) {
             <div className="loading-content">
                 {/* Logo */}
                 <div className="loading-logo">
-                    <span className="logo mono">VEXT</span>
+                    <img src="/logo.png" alt="VEXT" className="loading-logo-image" />
                     <span className="processing mono">PROCESSING</span>
                 </div>
 

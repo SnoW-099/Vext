@@ -27,10 +27,11 @@
     gap: var(--space-sm);
 }
 
-.loading-logo .logo {
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: 0.3em;
+.loading-logo .loading-logo-image {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: var(--space-xs);
 }
 
 .processing {
