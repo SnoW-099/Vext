@@ -11,18 +11,31 @@ const USE_MOCK_API = import.meta.env.DEV && !import.meta.env.VITE_USE_REAL_API
 import Dashboard from './components/Dashboard'
 
 function App() {
-  const [stage, setStage] = useState('dashboard') // 'dashboard' | 'entry' | 'loading' | 'results'
+  const [stage, setStage] = useState('dashboard') // 'dashboard' | 'entry' | 'loading' | 'results' | 'transition'
+  const [targetStage, setTargetStage] = useState(null)
   const [hypothesis, setHypothesis] = useState('')
   const [analysisData, setAnalysisData] = useState(null)
   const [currentProject, setCurrentProject] = useState(null)
   const [error, setError] = useState(null)
   const apiCallRef = useRef(null)
 
+  const startTransition = (nextStage) => {
+    setTargetStage(nextStage)
+    setStage('transition')
+  }
+
+  const handleTransitionComplete = () => {
+    if (targetStage) {
+      setStage(targetStage)
+      setTargetStage(null)
+    }
+  }
+
   const handleNewProject = () => {
-    setStage('entry')
     setHypothesis('')
     setAnalysisData(null)
     setCurrentProject(null)
+    startTransition('entry')
   }
 
   const handleLoadProject = (project) => {
@@ -33,9 +46,8 @@ function App() {
       gradePercent: project.gradePercent,
       websitePreview: project.websitePreview,
       psychology: project.psychology,
-      // reconstitute other data if needed
     })
-    setStage('results')
+    startTransition('results')
   }
 
   const handleScan = (inputHypothesis) => {
@@ -66,12 +78,12 @@ function App() {
   }
 
   const handleReset = () => {
-    setStage('dashboard')
     setHypothesis('')
     setAnalysisData(null)
     setCurrentProject(null)
     setError(null)
     apiCallRef.current = null
+    startTransition('dashboard')
   }
 
   return (
@@ -89,6 +101,14 @@ function App() {
         <LoadingScreen
           hypothesis={hypothesis}
           onComplete={handleLoadingComplete}
+          mode="analysis"
+        />
+      )}
+      {stage === 'transition' && (
+        <LoadingScreen
+          hypothesis={hypothesis || 'Loading...'}
+          onComplete={handleTransitionComplete}
+          mode="transition"
         />
       )}
       {stage === 'results' && (

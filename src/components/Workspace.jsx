@@ -315,7 +315,7 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                         ))}
                     </div>
 
-                    <div className="chat-input-area">
+                    <div className="chat-input-container">
                         <input
                             type="text"
                             className="chat-input"

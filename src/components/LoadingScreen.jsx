@@ -1,16 +1,24 @@
 import { useState, useEffect } from 'react'
 import './LoadingScreen.css'
 
-const PHASES = [
+const ANALYSIS_PHASES = [
     { text: 'ANALYZING MARKET VIABILITY...', duration: 2000 },
     { text: 'DECONSTRUCTING AUDIENCE PSYCHOLOGY...', duration: 2000 },
     { text: 'ASSEMBLING CONVERSION ARCHITECTURE...', duration: 2000 },
     { text: 'GENERATING VIRTUAL ASSETS...', duration: 2000 },
 ]
 
-function LoadingScreen({ hypothesis, onComplete }) {
+const TRANSITION_PHASES = [
+    { text: 'LOADING PROJECT DATA...', duration: 800 },
+    { text: 'RECALIBRATING INTERFACE...', duration: 700 }
+]
+
+function LoadingScreen({ hypothesis, onComplete, mode = 'analysis' }) {
     const [currentPhase, setCurrentPhase] = useState(0)
     const [progress, setProgress] = useState(0)
+
+    // Select phases based on mode
+    const PHASES = mode === 'transition' ? TRANSITION_PHASES : ANALYSIS_PHASES;
 
     useEffect(() => {
         const totalDuration = PHASES.reduce((sum, p) => sum + p.duration, 0)
@@ -42,7 +50,7 @@ function LoadingScreen({ hypothesis, onComplete }) {
         }, 50)
 
         return () => clearInterval(interval)
-    }, [onComplete])
+    }, [onComplete, PHASES])
 
     return (
         <div className="loading-screen">
