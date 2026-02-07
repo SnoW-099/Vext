@@ -1,9 +1,9 @@
 .workspace {
     min-height: 100vh;
     min-height: 100dvh;
-    /* Dynamic viewport for mobile */
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    /* Desktop: horizontal layout */
     background: var(--bg-primary);
     position: relative;
     overflow: hidden;
@@ -17,10 +17,15 @@
 }
 
 .mobile-only {
-    display: none;
+    display: none !important;
 }
 
 @media (max-width: 768px) {
+    .workspace {
+        flex-direction: column;
+        /* Mobile: vertical layout */
+    }
+
     .desktop-only {
         display: none !important;
     }
@@ -31,7 +36,7 @@
 }
 
 /* ============================================
-   MOBILE HEADER - Clean minimal
+   MOBILE HEADER
    ============================================ */
 .mobile-header {
     display: none;
@@ -48,10 +53,6 @@
 @media (max-width: 768px) {
     .mobile-header {
         display: flex;
-    }
-
-    .workspace {
-        flex-direction: column;
     }
 }
 
@@ -89,6 +90,8 @@
    ============================================ */
 .left-rail {
     width: 56px;
+    min-width: 56px;
+    height: 100vh;
     background: var(--bg-secondary);
     border-right: 1px solid rgba(255, 255, 255, 0.04);
     flex-direction: column;
@@ -385,42 +388,20 @@
     display: flex;
     flex-direction: column;
     padding: var(--space-3xl);
+    margin-right: 120px;
+    /* Space for floating preview on desktop */
     overflow-y: auto;
-}
-
-@media (min-width: 769px) {
-    .center-terminal {
-        margin-right: 120px;
-    }
 }
 
 @media (max-width: 768px) {
     .center-terminal {
         padding: 0;
+        margin-right: 0;
         padding-bottom: 80px;
-        /* Space for bottom tab bar */
     }
 }
 
-/* Mobile content tabs */
-.mobile-content {
-    display: none;
-    flex-direction: column;
-    flex: 1;
-    padding: var(--space-lg);
-    overflow-y: auto;
-}
-
-.mobile-content.active {
-    display: flex;
-}
-
-@media (min-width: 769px) {
-    .mobile-content:first-child {
-        display: flex;
-    }
-}
-
+/* Desktop: Show terminal content directly */
 .terminal-content {
     flex: 1;
     display: flex;
@@ -434,8 +415,23 @@
 @media (max-width: 768px) {
     .terminal-content {
         justify-content: flex-start;
-        padding-top: var(--space-lg);
+        padding: var(--space-lg);
     }
+}
+
+/* Mobile page content - each page is fullscreen */
+.mobile-page {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    min-height: calc(100dvh - 120px);
+    /* Header + Tab bar */
+    padding: var(--space-lg);
+    overflow-y: auto;
+}
+
+.mobile-page.active {
+    display: flex;
 }
 
 .report-header {
@@ -567,7 +563,7 @@
 }
 
 /* ============================================
-   MOBILE: Stats Tab Content
+   MOBILE: Stats Page Content
    ============================================ */
 .mobile-stats {
     display: flex;
@@ -582,7 +578,7 @@
 }
 
 /* ============================================
-   MOBILE: Preview Tab Content
+   MOBILE: Preview Page Content
    ============================================ */
 .mobile-preview-content {
     display: flex;
@@ -598,7 +594,9 @@
     max-width: 260px;
 }
 
-/* Shared phone frame & preview */
+/* ============================================
+   SHARED: Phone Frame & Preview
+   ============================================ */
 .phone-frame-large {
     width: 280px;
     background: var(--bg-secondary);
@@ -755,7 +753,7 @@
     color: var(--text-muted);
 }
 
-/* Expanded Preview */
+/* Expanded Preview (Desktop) */
 .floating-preview.expanded {
     position: fixed;
     inset: 0;

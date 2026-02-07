@@ -12,9 +12,9 @@ import {
 } from 'lucide-react'
 
 function Workspace({ hypothesis, data, onReset }) {
-    const [activePanel, setActivePanel] = useState(null) // 'grade' | 'psychology' | 'targeting' | 'growth'
+    const [activePanel, setActivePanel] = useState(null)
     const [previewExpanded, setPreviewExpanded] = useState(false)
-    const [mobileTab, setMobileTab] = useState('report') // 'report' | 'stats' | 'preview'
+    const [mobilePage, setMobilePage] = useState('report') // 'report' | 'stats' | 'preview'
 
     const togglePanel = (panel) => {
         setActivePanel(activePanel === panel ? null : panel)
@@ -25,7 +25,7 @@ function Workspace({ hypothesis, data, onReset }) {
             {/* ============================================
           MOBILE HEADER
           ============================================ */}
-            <header className="mobile-header">
+            <header className="mobile-header mobile-only">
                 <span className="logo-mark mono">VEXT</span>
                 <span className="status-badge">
                     <span className="status-dot" />
@@ -34,7 +34,7 @@ function Workspace({ hypothesis, data, onReset }) {
             </header>
 
             {/* ============================================
-          DESKTOP: Left Rail - Icon Navigation
+          DESKTOP: Left Rail
           ============================================ */}
             <aside className="left-rail desktop-only">
                 <div className="rail-top">
@@ -83,7 +83,7 @@ function Workspace({ hypothesis, data, onReset }) {
             </aside>
 
             {/* ============================================
-          DESKTOP: Side Panel (Slides in from left)
+          DESKTOP: Side Panel
           ============================================ */}
             {activePanel && (
                 <div className="side-panel desktop-only">
@@ -152,104 +152,49 @@ function Workspace({ hypothesis, data, onReset }) {
             )}
 
             {/* ============================================
-          CENTER - Main Content Area
+          DESKTOP: Center Terminal (always visible)
           ============================================ */}
-            <main className="center-terminal">
-                {/* Mobile: Tab-based content */}
-                <div className={`mobile-content ${mobileTab === 'report' ? 'active' : ''}`}>
-                    <div className="terminal-content">
-                        <div className="report-header mono">
-                            <span className="report-label">ANALYSIS COMPLETE</span>
-                            <span className="report-dot" />
+            <main className="center-terminal desktop-only">
+                <div className="terminal-content">
+                    <div className="report-header mono">
+                        <span className="report-label">ANALYSIS COMPLETE</span>
+                        <span className="report-dot" />
+                    </div>
+
+                    <div className="report-body">
+                        <h1 className="report-title">{data?.websitePreview?.title || hypothesis}</h1>
+                        <p className="report-tagline">{data?.websitePreview?.tagline}</p>
+
+                        <div className="report-section">
+                            <span className="section-label mono">Strategy Overview</span>
+                            <p className="section-text">
+                                Your business concept has been analyzed against market trends, competitor positioning,
+                                and psychological conversion patterns. The generated landing page implements a
+                                high-conversion architecture optimized for your target demographic.
+                            </p>
                         </div>
 
-                        <div className="report-body">
-                            <h1 className="report-title">{data?.websitePreview?.title || hypothesis}</h1>
-                            <p className="report-tagline">{data?.websitePreview?.tagline}</p>
-
-                            <div className="report-section">
-                                <span className="section-label mono">Strategy Overview</span>
-                                <p className="section-text">
-                                    Your business concept has been analyzed against market trends, competitor positioning,
-                                    and psychological conversion patterns. The generated landing page implements a
-                                    high-conversion architecture optimized for your target demographic.
-                                </p>
-                            </div>
-
-                            <div className="report-section desktop-only">
-                                <span className="section-label mono">Key Metrics</span>
-                                <div className="metrics-row">
-                                    <div className="metric">
-                                        <span className="metric-value">{data?.grade}</span>
-                                        <span className="metric-label mono">GRADE</span>
-                                    </div>
-                                    <div className="metric">
-                                        <span className="metric-value">{data?.psychology?.length || 0}</span>
-                                        <span className="metric-label mono">TRIGGERS</span>
-                                    </div>
-                                    <div className="metric">
-                                        <span className="metric-value">1</span>
-                                        <span className="metric-label mono">LANDING</span>
-                                    </div>
+                        <div className="report-section">
+                            <span className="section-label mono">Key Metrics</span>
+                            <div className="metrics-row">
+                                <div className="metric">
+                                    <span className="metric-value">{data?.grade}</span>
+                                    <span className="metric-label mono">GRADE</span>
+                                </div>
+                                <div className="metric">
+                                    <span className="metric-value">{data?.psychology?.length || 0}</span>
+                                    <span className="metric-label mono">TRIGGERS</span>
+                                </div>
+                                <div className="metric">
+                                    <span className="metric-value">1</span>
+                                    <span className="metric-label mono">LANDING</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Mobile Stats Tab Content */}
-                <div className={`mobile-content mobile-only ${mobileTab === 'stats' ? 'active' : ''}`}>
-                    <div className="mobile-stats">
-                        <div className="grade-hero-mobile">
-                            <span className="grade-letter">{data?.grade}</span>
-                            <span className="grade-percent mono">{data?.gradePercent}%</span>
-                        </div>
-                        <div className="grade-bar">
-                            <div className="grade-fill" style={{ width: `${data?.gradePercent}%` }} />
-                        </div>
-
-                        <div className="stats-section">
-                            <span className="section-label mono">PSYCHOLOGY TRIGGERS</span>
-                            <div className="triggers-grid">
-                                {data?.psychology?.map((trigger, i) => (
-                                    <div key={i} className="trigger-item">
-                                        <span className="trigger-dot" />
-                                        <span className="trigger-name">{trigger}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="stats-section">
-                            <span className="section-label mono">TARGET AUDIENCE</span>
-                            <p className="target-audience">{data?.targeting}</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Mobile Preview Tab Content */}
-                <div className={`mobile-content mobile-only ${mobileTab === 'preview' ? 'active' : ''}`}>
-                    <div className="mobile-preview-content">
-                        <div className="phone-frame-large">
-                            <div className="phone-notch" />
-                            <div className="phone-screen">
-                                <div className="preview-hero">
-                                    <h2 className="preview-title">{data?.websitePreview?.title || 'Your Business'}</h2>
-                                    <p className="preview-tagline">{data?.websitePreview?.tagline}</p>
-                                </div>
-                                <div className="preview-image">AI Generated</div>
-                                <button className="preview-cta-btn">Get Started</button>
-                                <div className="preview-features">
-                                    <span>✓ Fast Delivery</span>
-                                    <span>✓ Premium Quality</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Desktop hint */}
-                <div className="terminal-hint mono desktop-only">
+                <div className="terminal-hint mono">
                     <span>← Explore panels</span>
                     <span>•</span>
                     <span>Preview →</span>
@@ -257,7 +202,82 @@ function Workspace({ hypothesis, data, onReset }) {
             </main>
 
             {/* ============================================
-          DESKTOP: Right Floating Preview
+          MOBILE: Full-Page Sections (one at a time)
+          ============================================ */}
+
+            {/* Page 1: Report */}
+            <div className={`mobile-page mobile-only ${mobilePage === 'report' ? 'active' : ''}`}>
+                <div className="report-header mono">
+                    <span className="report-label">ANALYSIS COMPLETE</span>
+                    <span className="report-dot" />
+                </div>
+                <div className="report-body">
+                    <h1 className="report-title">{data?.websitePreview?.title || hypothesis}</h1>
+                    <p className="report-tagline">{data?.websitePreview?.tagline}</p>
+                    <div className="report-section">
+                        <span className="section-label mono">Strategy Overview</span>
+                        <p className="section-text">
+                            Your business concept has been analyzed against market trends, competitor positioning,
+                            and psychological conversion patterns. The generated landing page implements a
+                            high-conversion architecture optimized for your target demographic.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Page 2: Stats */}
+            <div className={`mobile-page mobile-only ${mobilePage === 'stats' ? 'active' : ''}`}>
+                <div className="mobile-stats">
+                    <div className="grade-hero-mobile">
+                        <span className="grade-letter">{data?.grade}</span>
+                        <span className="grade-percent mono">{data?.gradePercent}%</span>
+                    </div>
+                    <div className="grade-bar">
+                        <div className="grade-fill" style={{ width: `${data?.gradePercent}%` }} />
+                    </div>
+
+                    <div className="stats-section">
+                        <span className="section-label mono">PSYCHOLOGY TRIGGERS</span>
+                        <div className="triggers-grid">
+                            {data?.psychology?.map((trigger, i) => (
+                                <div key={i} className="trigger-item">
+                                    <span className="trigger-dot" />
+                                    <span className="trigger-name">{trigger}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="stats-section">
+                        <span className="section-label mono">TARGET AUDIENCE</span>
+                        <p className="target-audience">{data?.targeting}</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Page 3: Preview */}
+            <div className={`mobile-page mobile-only ${mobilePage === 'preview' ? 'active' : ''}`}>
+                <div className="mobile-preview-content">
+                    <div className="phone-frame-large">
+                        <div className="phone-notch" />
+                        <div className="phone-screen">
+                            <div className="preview-hero">
+                                <h2 className="preview-title">{data?.websitePreview?.title || 'Your Business'}</h2>
+                                <p className="preview-tagline">{data?.websitePreview?.tagline}</p>
+                            </div>
+                            <div className="preview-image">AI Generated</div>
+                            <button className="preview-cta-btn">Get Started</button>
+                            <div className="preview-features">
+                                <span>✓ Fast Delivery</span>
+                                <span>✓ Premium Quality</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ============================================
+          DESKTOP: Floating Preview
           ============================================ */}
             <div className={`floating-preview desktop-only ${previewExpanded ? 'expanded' : ''}`}>
                 {!previewExpanded ? (
@@ -301,26 +321,26 @@ function Workspace({ hypothesis, data, onReset }) {
             </div>
 
             {/* ============================================
-          MOBILE: Fixed Bottom Tab Bar
+          MOBILE: Bottom Tab Bar
           ============================================ */}
             <nav className="mobile-tab-bar mobile-only">
                 <button
-                    className={`tab-item ${mobileTab === 'report' ? 'active' : ''}`}
-                    onClick={() => setMobileTab('report')}
+                    className={`tab-item ${mobilePage === 'report' ? 'active' : ''}`}
+                    onClick={() => setMobilePage('report')}
                 >
                     <Brain size={20} strokeWidth={1.5} />
                     <span className="tab-label">Scan</span>
                 </button>
                 <button
-                    className={`tab-item ${mobileTab === 'stats' ? 'active' : ''}`}
-                    onClick={() => setMobileTab('stats')}
+                    className={`tab-item ${mobilePage === 'stats' ? 'active' : ''}`}
+                    onClick={() => setMobilePage('stats')}
                 >
                     <span className="tab-grade">{data?.grade}</span>
                     <span className="tab-label">{data?.gradePercent}%</span>
                 </button>
                 <button
-                    className={`tab-item ${mobileTab === 'preview' ? 'active' : ''}`}
-                    onClick={() => setMobileTab('preview')}
+                    className={`tab-item ${mobilePage === 'preview' ? 'active' : ''}`}
+                    onClick={() => setMobilePage('preview')}
                 >
                     <Eye size={20} strokeWidth={1.5} />
                     <span className="tab-label">Preview</span>
