@@ -15,14 +15,14 @@ function Dashboard({ onNewProject, onLoadProject }) {
 
     const handleDelete = (e, id) => {
         e.stopPropagation();
-        if (confirm('Delete this project?')) {
+        if (confirm('¿Borrar este proyecto?')) {
             projectService.delete(id);
             setProjects(prev => prev.filter(p => p.id !== id));
         }
     };
 
     const formatDate = (isoString) => {
-        return new Date(isoString).toLocaleDateString('en-US', {
+        return new Date(isoString).toLocaleDateString('es-ES', {
             month: 'short',
             day: 'numeric',
             hour: '2-digit',
@@ -35,11 +35,11 @@ function Dashboard({ onNewProject, onLoadProject }) {
             <header className="dashboard-header">
                 <div className="header-brand">
                     <span className="logo-mark mono">VEXT</span>
-                    <span className="logo-text mono">PROJECTS</span>
+                    <span className="logo-text mono">PROYECTOS</span>
                 </div>
                 <button className="new-project-btn" onClick={onNewProject}>
                     <Plus size={18} />
-                    <span className="mono">NEW SCAN</span>
+                    <span className="mono">NUERO ANÁLISIS</span>
                 </button>
             </header>
 
@@ -100,11 +100,11 @@ function Dashboard({ onNewProject, onLoadProject }) {
                         <button className="cta-btn" onClick={onNewProject}>
                             INICIAR ANÁLISIS
                         </button>
+                    </div>
                 )}
-                    </main>
+            </main>
         </div>
     );
 }
-
 
 export default Dashboard;
