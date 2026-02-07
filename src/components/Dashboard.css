@@ -10,21 +10,37 @@
     /* For grid background */
 }
 
-/* Subtle Grid Background - Matches EntryScreen style but more transparent */
+/* Subtle Grid Background - AutoCAD Style with Radar Dots */
 .dashboard::before {
     content: '';
     position: absolute;
     inset: 0;
+    /* User requested AutoCAD grid */
     background-image:
-        linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
-    background-size: 60px 60px;
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Radar Dots Layer */
+.dashboard::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* Green neon dots at intersections every 5 cells (40px * 5 = 200px) */
+    background-image: radial-gradient(circle, var(--accent-neon) 1.5px, transparent 1.5px);
+    background-size: 200px 200px;
+    background-position: 0 0;
+    opacity: 0.4;
     pointer-events: none;
     z-index: 0;
 }
 
 .dashboard-header,
-.dashboard-content {
+.dashboard-content,
+.system-status-footer {
     position: relative;
     z-index: 1;
 }
@@ -64,7 +80,76 @@
     font-weight: 700;
 }
 
-/* === New Project CTA Card (Minimalist) === */
+/* === Empty System Boot Screen === */
+.empty-boot-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    /* Takes up most of the screen */
+    gap: var(--space-2xl);
+    text-align: left;
+}
+
+.terminal-text {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent-neon);
+    font-size: 1.1rem;
+    white-space: pre-line;
+    line-height: 1.6;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    min-height: 3em;
+}
+
+.big-cta-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background: transparent;
+    border: 1px solid var(--accent-neon);
+    color: var(--accent-neon);
+    padding: var(--space-lg) var(--space-2xl);
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+}
+
+.big-cta-btn:hover {
+    background: var(--accent-neon);
+    color: var(--bg-primary);
+    box-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
+    transform: scale(1.05);
+}
+
+/* === System Status Footer === */
+.system-status-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: var(--space-sm) var(--space-xl);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-xl);
+    font-size: 0.65rem;
+    color: #52525b;
+    /* zinc-600 */
+    letter-spacing: 0.05em;
+    pointer-events: none;
+}
+
+.system-status-footer span {
+    display: inline-block;
+}
+
+/* === New Project CTA Card (Minimalist - Grid Version) === */
 .project-card.new-project-cta {
     background: rgba(255, 255, 255, 0.01);
     border: 1px dashed rgba(255, 255, 255, 0.2);
@@ -123,25 +208,6 @@
     font-size: 0.85rem;
 }
 
-/* === Demo Card Styling === */
-.project-card.demo-card {
-    opacity: 0.5;
-    filter: grayscale(0.8);
-    border-style: dashed;
-    pointer-events: none;
-    /* Non-clickable based on user description */
-}
-
-.demo-badge {
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    border: 1px solid var(--text-muted);
-    padding: 2px 6px;
-    border-radius: 4px;
-    letter-spacing: 0.1em;
-}
-
 /* Grid Layout */
 .projects-grid {
     display: grid;
@@ -150,54 +216,6 @@
     width: 100%;
 }
 
-/* Empty State */
-.empty-state {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 100px 0;
-    text-align: center;
-    color: var(--text-muted);
-}
-
-.empty-icon {
-    font-size: 3rem;
-    margin-bottom: var(--space-md);
-    opacity: 0.5;
-}
-
-/* Start Analysis CTA Button */
-.cta-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-sm);
-    margin-top: var(--space-lg);
-    padding: var(--space-md) var(--space-2xl);
-    background: var(--accent-neon);
-    color: var(--bg-primary);
-    border: none;
-    border-radius: var(--radius-lg);
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
-    letter-spacing: 0.05em;
-}
-
-.cta-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(0, 255, 136, 0.5);
-}
-
-.cta-btn:active {
-    transform: scale(0.97);
-}
-
-/* Project Card */
 /* Standard Project Card */
 .project-card {
     background: var(--bg-secondary);
@@ -217,52 +235,6 @@
     border-color: var(--accent-neon);
     transform: translateY(-4px);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-}
-
-/* New Project Template Card (Placeholder style) */
-.project-card.new-project-template {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
-    border: 1px dashed rgba(255, 255, 255, 0.2);
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: var(--space-lg);
-}
-
-.project-card.new-project-template:hover {
-    border-color: var(--accent-neon);
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: none;
-    transform: translateY(-2px);
-}
-
-.template-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-muted);
-    transition: 0.2s;
-}
-
-.project-card.new-project-template:hover .template-icon {
-    background: var(--accent-neon);
-    color: var(--bg-primary);
-}
-
-.template-info h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: var(--space-xs);
-}
-
-.template-info p {
-    font-size: 0.8rem;
-    color: var(--text-muted);
 }
 
 .card-top {
