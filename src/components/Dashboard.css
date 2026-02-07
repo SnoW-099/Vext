@@ -76,6 +76,57 @@
     font-weight: 700;
 }
 
+/* === Stats Bar === */
+.stats-bar {
+    display: flex;
+    gap: var(--space-2xl);
+    padding-top: var(--space-lg);
+    margin-top: var(--space-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    width: 100%;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+}
+
+.stat-value-text {
+    font-size: 0.9rem;
+    color: var(--accent-neon);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-neon);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-neon);
+}
+
 /* === Empty System Boot Screen === */
 .empty-boot-screen {
     display: flex;
@@ -268,6 +319,39 @@
     box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
 }
 
+.grade-badge.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-md);
+}
+
+.card-header-left {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+}
+
+/* New Technical ID Badge */
+.id-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+
+.status-chip {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent-neon);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    background: rgba(0, 255, 136, 0.05);
+}
+
 .grade-badge.grade-C {
     color: var(--warning);
     background: rgba(255, 170, 0, 0.1);
@@ -283,7 +367,7 @@
     background: transparent;
     border: none;
     color: var(--text-muted);
-    padding: 8px;
+    padding: 4px;
     border-radius: 4px;
     cursor: pointer;
     opacity: 0;
@@ -301,24 +385,25 @@
 
 .card-content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* Refined Project Title */
 .project-title {
     font-size: 1rem;
-    /* Smaller font as requested */
-    font-weight: 400;
-    /* Thinner font */
+    font-weight: 500;
     color: var(--text-primary);
     margin-bottom: var(--space-xs);
-    line-height: 1.5;
+    line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
     /* Standard property */
     -webkit-box-orient: vertical;
     overflow: hidden;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
 }
 
 .project-tagline {
@@ -330,6 +415,17 @@
     /* Standard property */
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.category-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    align-self: flex-start;
+    margin-top: var(--space-xs);
 }
 
 .card-footer {

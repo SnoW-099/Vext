@@ -45,14 +45,45 @@ function Dashboard({ onNewProject, onLoadProject }) {
     };
 
     const formatProjectId = (id) => {
-        // If id is a number or numeric string, pad it.
-        // If it's a UUID, take last 3 chars.
-        // For now, let's assume we want a technical look.
-        // We'll generate a pseudo-ID based on the string hash or length if it's not numeric.
         if (!id) return 'ID_000';
         const num = id.toString().replace(/\D/g, '').slice(0, 3).padEnd(3, '0');
         return `ID_${num}`;
     };
+
+    const getProjectStatus = (id) => {
+        // Mock status based on ID for consistency
+        const statuses = ['VALIDANDO', 'PROTOTIPO', 'INVESTIGACIÓN'];
+        // Use a simple hash of the ID to pick a status
+        const charCode = id.toString().charCodeAt(0) || 0;
+        return statuses[charCode % statuses.length];
+    };
+
+    const getProjectCategory = (id) => {
+        // Mock category
+        const categories = ['SAAS', 'E-COMMERCE', 'APP MÓVIL', 'MARKETPLACE'];
+        const charCode = id.toString().charCodeAt(0) || 0;
+        return categories[(charCode + 1) % categories.length];
+    };
+
+    const StatsBar = () => (
+        <div className="stats-bar">
+            <div className="stat-item">
+                <span className="stat-label">PROYECTOS ACTIVOS</span>
+                <span className="stat-value">{projects.length}</span>
+            </div>
+            <div className="stat-item">
+                <span className="stat-label">TASA DE ÉXITO</span>
+                <span className="stat-value">85%</span>
+            </div>
+            <div className="stat-item">
+                <span className="stat-label">ESTADO DEL SISTEMA</span>
+                <div className="status-indicator">
+                    <div className="status-dot"></div>
+                    <span className="stat-value-text">OPERATIVO</span>
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <div className="dashboard">
@@ -62,10 +93,8 @@ function Dashboard({ onNewProject, onLoadProject }) {
                         <img src="/favicon/favicon.svg" alt="VEXT" className="logo-icon" />
                         <span className="logo-text mono">PROYECTOS</span>
                     </div>
-                    {projects.length > 0 && (
-                        <p className="header-subtitle">Crea y gestiona los análisis de tus ideas de negocio</p>
-                    )}
                 </div>
+                {projects.length > 0 && <StatsBar />}
             </header>
 
             <main className="dashboard-content">
@@ -90,9 +119,14 @@ function Dashboard({ onNewProject, onLoadProject }) {
                                 onClick={() => onLoadProject(project)}
                             >
                                 <div className="card-top">
-                                    <span className="id-badge mono">
-                                        {formatProjectId(project.id)}
-                                    </span>
+                                    <div className="card-header-left">
+                                        <span className="id-badge mono">
+                                            {formatProjectId(project.id)}
+                                        </span>
+                                        <span className="status-chip mono">
+                                            {getProjectStatus(project.id)}
+                                        </span>
+                                    </div>
                                     <button
                                         className="delete-btn"
                                         onClick={(e) => handleDelete(e, project.id)}
@@ -105,9 +139,9 @@ function Dashboard({ onNewProject, onLoadProject }) {
                                     <h3 className="project-title">
                                         {project.websitePreview?.title || project.hypothesis?.slice(0, 40) || 'Sin Título'}
                                     </h3>
-                                    <p className="project-tagline">
-                                        {project.websitePreview?.tagline || 'Sin descripción'}
-                                    </p>
+                                    <span className="category-tag mono">
+                                        {getProjectCategory(project.id)}
+                                    </span>
                                 </div>
 
                                 <div className="card-footer">
