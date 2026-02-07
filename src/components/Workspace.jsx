@@ -10,7 +10,8 @@ import {
     Eye,
     RotateCcw,
     Save,
-    User
+    User,
+    MessageSquare
 } from 'lucide-react'
 
 import { refineHypothesis } from '../services/vextApi'
@@ -22,6 +23,7 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
     const [activePanel, setActivePanel] = useState(null)
     const [previewExpanded, setPreviewExpanded] = useState(false)
     const [mobilePage, setMobilePage] = useState('report') // 'report' | 'stats' | 'preview'
+    const [isChatOpen, setIsChatOpen] = useState(false)
 
     // Chat & Project State
     const [chatInput, setChatInput] = useState('')
@@ -563,8 +565,66 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
             </nav>
 
             {/* ============================================
-          MOBILE: Launch Modal
-          ============================================ */}
+           MOBILE: Chat Overlay
+           ============================================ */}
+            {isChatOpen && (
+                <div className="mobile-chat-overlay mobile-only">
+                    <div className="chat-header-mobile">
+                        <span className="logo-mark mono">VEXT TERMINAL</span>
+                        <button className="chat-close-btn" onClick={() => setIsChatOpen(false)}>
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div className="chat-messages-mobile">
+                        {chatHistory.map((msg, idx) => (
+                            <div key={idx} className={`message ${msg.role}`}>
+                                <div className="message-header">
+                                    <span className="message-role">{msg.role === 'user' ? 'USER' : 'VEXT'}</span>
+                                </div>
+                                <div className="message-content">
+                                    {msg.role === 'ai' && msg.isLoading ? (
+                                        <div className="typing-indicator mono">
+                                            Thinking
+                                            <span className="jumping-dot">.</span>
+                                            <span className="jumping-dot" style={{ animationDelay: '0.2s' }}>.</span>
+                                            <span className="jumping-dot" style={{ animationDelay: '0.4s' }}>.</span>
+                                        </div>
+                                    ) : (
+                                        <p className="ai-text-content">
+                                            {msg.role === 'ai' ? <Typewriter text={msg.content} speed={15} /> : msg.content}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="chat-input-mobile">
+                        <input
+                            type="text"
+                            placeholder="Refine..."
+                            value={chatInput}
+                            onChange={(e) => setChatInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleRefine()}
+                        />
+                        <button className="mobile-send-btn" onClick={handleRefine}>
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Mobile Chat FAB */}
+            {!isChatOpen && !previewExpanded && (
+                <button className="chat-fab mobile-only" onClick={() => setIsChatOpen(true)}>
+                    <MessageSquare size={24} />
+                </button>
+            )}
+
+            {/* ============================================
+           MOBILE: Launch Modal
+           ============================================ */}
             {previewExpanded && (
                 <div className="mobile-launch-modal mobile-only">
                     <div className="modal-backdrop" onClick={() => setPreviewExpanded(false)} />

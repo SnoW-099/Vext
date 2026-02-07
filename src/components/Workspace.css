@@ -913,9 +913,7 @@
     font-weight: 600;
 }
 
-letter-spacing: 0.15em;
-color: var(--text-muted);
-}
+
 
 /* Expanded Preview (Desktop) */
 .floating-preview.expanded {
