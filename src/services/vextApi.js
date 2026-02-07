@@ -40,7 +40,7 @@ export async function analyzeHypothesis(hypothesis) {
         websitePreview: {
             title: data.landing_page?.headline || hypothesis.slice(0, 50),
             tagline: data.landing_page?.subheadline || '',
-            html: data.landing_page?.tailwind_html || ''
+            html: data.landing_page?.tailwind_html ? injectPreviewStyles(data.landing_page.tailwind_html) : ''
         },
         viralKit: {
             hooks: data.viral_kit?.hooks || [],
@@ -81,4 +81,17 @@ export function getMockAnalysis(hypothesis) {
             ]
         }
     };
+}
+
+function injectPreviewStyles(html) {
+    const styles = `
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+        body { overflow-x: hidden; }
+    </style>
+    `;
+    return html.replace('</head>', `${styles}</head>`);
 }

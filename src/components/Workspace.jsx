@@ -263,26 +263,29 @@ function Workspace({ hypothesis, data, onReset }) {
             {/* Page 3: Preview */}
             <div className={`mobile-page ${mobilePage === 'preview' ? 'active' : ''}`}>
                 <div className="mobile-preview-content">
-                    {data?.websitePreview?.html ? (
-                        <iframe
-                            srcDoc={data.websitePreview.html}
-                            className="preview-iframe"
-                            title="Landing Page Preview"
-                            sandbox="allow-scripts"
-                        />
-                    ) : (
-                        <div className="phone-frame-large">
-                            <div className="phone-notch" />
-                            <div className="phone-screen">
-                                <div className="preview-hero">
-                                    <h2 className="preview-title">{data?.websitePreview?.title || 'Your Business'}</h2>
-                                    <p className="preview-tagline">{data?.websitePreview?.tagline}</p>
-                                </div>
-                                <div className="preview-image">AI Generated</div>
-                                <button className="preview-cta-btn">Get Started</button>
-                            </div>
+                    <div className="phone-frame-large">
+                        <div className="phone-notch" />
+                        <div className="phone-screen" style={{ padding: data?.websitePreview?.html ? 0 : undefined }}>
+                            {data?.websitePreview?.html ? (
+                                <iframe
+                                    srcDoc={data.websitePreview.html}
+                                    className="preview-iframe"
+                                    title="Landing Page Preview"
+                                    sandbox="allow-scripts"
+                                    style={{ borderRadius: '24px' }}
+                                />
+                            ) : (
+                                <>
+                                    <div className="preview-hero">
+                                        <h2 className="preview-title">{data?.websitePreview?.title || 'Your Business'}</h2>
+                                        <p className="preview-tagline">{data?.websitePreview?.tagline}</p>
+                                    </div>
+                                    <div className="preview-image">AI Generated</div>
+                                    <button className="preview-cta-btn">Get Started</button>
+                                </>
+                            )}
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
 
@@ -310,16 +313,27 @@ function Workspace({ hypothesis, data, onReset }) {
                         <div className="phone-frame-large">
                             <div className="phone-notch" />
                             <div className="phone-screen">
-                                <div className="preview-hero">
-                                    <h2 className="preview-title">{data?.websitePreview?.title || 'Your Business'}</h2>
-                                    <p className="preview-tagline">{data?.websitePreview?.tagline}</p>
-                                </div>
-                                <div className="preview-image">AI Generated</div>
-                                <button className="preview-cta-btn">Get Started</button>
-                                <div className="preview-features">
-                                    <span>✓ Fast Delivery</span>
-                                    <span>✓ Premium Quality</span>
-                                </div>
+                                {data?.websitePreview?.html ? (
+                                    <iframe
+                                        srcDoc={data.websitePreview.html}
+                                        className="preview-iframe"
+                                        title="Landing Page Preview"
+                                        sandbox="allow-scripts"
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="preview-hero">
+                                            <h2 className="preview-title">{data?.websitePreview?.title || 'Your Business'}</h2>
+                                            <p className="preview-tagline">{data?.websitePreview?.tagline}</p>
+                                        </div>
+                                        <div className="preview-image">AI Generated</div>
+                                        <button className="preview-cta-btn">Get Started</button>
+                                        <div className="preview-features">
+                                            <span>✓ Fast Delivery</span>
+                                            <span>✓ Premium Quality</span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                         <button className="launch-btn">
