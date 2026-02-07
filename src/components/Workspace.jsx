@@ -8,26 +8,66 @@ import {
     X,
     ChevronRight,
     Eye,
-    RotateCcw
+    RotateCcw,
+    Save
 } from 'lucide-react'
 
 import { refineHypothesis } from '../services/vextApi'
+import { projectService } from '../services/projectService'
 
-function Workspace({ hypothesis, data: initialData, onReset }) {
+function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
     const [data, setData] = useState(initialData)
     const [activePanel, setActivePanel] = useState(null)
     const [previewExpanded, setPreviewExpanded] = useState(false)
     const [mobilePage, setMobilePage] = useState('report') // 'report' | 'stats' | 'preview'
 
-    // Chat State
+    // Chat & Project State
     const [chatInput, setChatInput] = useState('')
     const [chatHistory, setChatHistory] = useState([])
     const [isRefining, setIsRefining] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
+    const [projectId, setProjectId] = useState(currentProject?.id || null)
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
     // Update local data when props change (initial load)
     useEffect(() => {
         if (initialData) setData(initialData)
     }, [initialData])
+
+    // Track changes for save indicator
+    useEffect(() => {
+        if (data !== initialData) setHasUnsavedChanges(true)
+    }, [data, initialData])
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            const projectToSave = {
+                id: projectId,
+                hypothesis: hypothesis || data.websitePreview.title,
+                grade: data.grade,
+                gradePercent: data.gradePercent,
+                websitePreview: data.websitePreview,
+                psychology: data.psychologyDetails || data.psychology,
+                targeting: data.targeting,
+                // Add any other needed data
+            };
+
+            const savedProject = projectService.save(projectToSave);
+            setProjectId(savedProject.id);
+            setHasUnsavedChanges(false);
+
+            // Add system message
+            setChatHistory(prev => [...prev, {
+                role: 'ai',
+                content: `Project saved successfully at ${new Date().toLocaleTimeString()}.`
+            }]);
+        } catch (error) {
+            console.error('Save failed', error);
+        } finally {
+            setTimeout(() => setIsSaving(false), 500);
+        }
+    };
 
     const togglePanel = (panel) => {
         setActivePanel(activePanel === panel ? null : panel)
