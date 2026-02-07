@@ -6,7 +6,12 @@ const API_BASE = import.meta.env.DEV
     : '';
 
 export async function analyzeHypothesis(hypothesis) {
-    const response = await fetch(`${API_BASE}/.netlify/functions/analyze`, {
+    console.log('[VEXT API] Starting analysis...', { hypothesis, API_BASE });
+
+    const url = `${API_BASE}/.netlify/functions/analyze`;
+    console.log('[VEXT API] Calling:', url);
+
+    const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -14,12 +19,16 @@ export async function analyzeHypothesis(hypothesis) {
         body: JSON.stringify({ hypothesis })
     });
 
+    console.log('[VEXT API] Response status:', response.status);
+
     if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('[VEXT API] Error:', error);
         throw new Error(error.error || `API Error: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('[VEXT API] Success! Raw response:', data);
 
     // Transform to match existing frontend structure
     return {

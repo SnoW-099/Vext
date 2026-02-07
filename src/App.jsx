@@ -21,6 +21,7 @@ function App() {
     setStage('loading')
 
     // Start API call in parallel with loading animation
+    console.log('[VEXT] Mode:', USE_MOCK_API ? 'MOCK' : 'REAL API')
     apiCallRef.current = USE_MOCK_API
       ? Promise.resolve(getMockAnalysis(inputHypothesis))
       : analyzeHypothesis(inputHypothesis)
