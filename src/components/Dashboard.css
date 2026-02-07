@@ -10,37 +10,27 @@
     /* For grid background */
 }
 
-/* Subtle Grid Background - AutoCAD Style with Radar Dots */
+/* Subtle Grid Background - Matches EntryScreen style */
 .dashboard::before {
     content: '';
     position: absolute;
     inset: 0;
-    /* User requested AutoCAD grid */
+    /* 60px grid, 1% opacity as requested */
     background-image:
-        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
+        linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+    background-size: 60px 60px;
     pointer-events: none;
     z-index: 0;
 }
 
-/* Radar Dots Layer */
+/* No Radar Dots Layer - Removed as requested */
 .dashboard::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    /* Green neon dots at intersections every 5 cells (40px * 5 = 200px) */
-    background-image: radial-gradient(circle, var(--accent-neon) 1.5px, transparent 1.5px);
-    background-size: 200px 200px;
-    background-position: 0 0;
-    opacity: 0.4;
-    pointer-events: none;
-    z-index: 0;
+    display: none;
 }
 
 .dashboard-header,
-.dashboard-content,
-.system-status-footer {
+.dashboard-content {
     position: relative;
     z-index: 1;
 }
@@ -71,6 +61,12 @@
     color: var(--text-muted);
     font-size: 0.9rem;
     margin-left: 2px;
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
 }
 
 .logo-text {
@@ -199,10 +195,6 @@
     letter-spacing: 0.02em;
 }
 
-.project-card.new-project-cta:hover .cta-content h3 {
-    color: var(--accent-neon);
-}
-
 .cta-content p {
     color: var(--text-muted);
     font-size: 0.85rem;
@@ -241,6 +233,18 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+}
+
+/* New Technical ID Badge */
+.id-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 4px 8px;
+    border-radius: 4px;
 }
 
 .grade-badge {
@@ -299,22 +303,26 @@
     flex: 1;
 }
 
+/* Refined Project Title */
 .project-title {
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1rem;
+    /* Smaller font as requested */
+    font-weight: 400;
+    /* Thinner font */
     color: var(--text-primary);
     margin-bottom: var(--space-xs);
-    line-height: 1.4;
+    line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
     /* Standard property */
     -webkit-box-orient: vertical;
     overflow: hidden;
+    letter-spacing: 0.02em;
 }
 
 .project-tagline {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
     display: -webkit-box;
     -webkit-line-clamp: 2;

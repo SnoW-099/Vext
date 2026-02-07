@@ -44,22 +44,22 @@ function Dashboard({ onNewProject, onLoadProject }) {
         });
     };
 
-    const SystemStatusFooter = () => (
-        <div className="system-status-footer mono">
-            <span>ENGINE_STATUS: [ OPTIMIZED ]</span>
-            <span>LATENCY: 14ms</span>
-            <span>ACTIVE_MODEL: GEMINI_1.5_PRO</span>
-            <span>UPLOADS_RESTRICTED: FALSE</span>
-            <span>ENCRYPTION: AES-256</span>
-        </div>
-    );
+    const formatProjectId = (id) => {
+        // If id is a number or numeric string, pad it.
+        // If it's a UUID, take last 3 chars.
+        // For now, let's assume we want a technical look.
+        // We'll generate a pseudo-ID based on the string hash or length if it's not numeric.
+        if (!id) return 'ID_000';
+        const num = id.toString().replace(/\D/g, '').slice(0, 3).padEnd(3, '0');
+        return `ID_${num}`;
+    };
 
     return (
         <div className="dashboard">
             <header className="dashboard-header">
                 <div className="header-brand-column">
                     <div className="brand-row">
-                        <span className="logo-mark mono">VEXT</span>
+                        <img src="/favicon/favicon.svg" alt="VEXT" className="logo-icon" />
                         <span className="logo-text mono">PROYECTOS</span>
                     </div>
                     {projects.length > 0 && (
@@ -90,8 +90,8 @@ function Dashboard({ onNewProject, onLoadProject }) {
                                 onClick={() => onLoadProject(project)}
                             >
                                 <div className="card-top">
-                                    <span className={`grade-badge grade-${project.grade || 'C'}`}>
-                                        {project.grade || 'C'}
+                                    <span className="id-badge mono">
+                                        {formatProjectId(project.id)}
                                     </span>
                                     <button
                                         className="delete-btn"
@@ -134,8 +134,6 @@ function Dashboard({ onNewProject, onLoadProject }) {
                     </div>
                 )}
             </main>
-
-            <SystemStatusFooter />
         </div>
     );
 }
