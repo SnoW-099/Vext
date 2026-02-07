@@ -83,6 +83,11 @@ exports.handler = async (event, context) => {
 
         // MODE: REFINE (Modify existing HTML)
         if (mode === 'refine') {
+            console.log('[REFINE] Mode activated');
+            console.log('[REFINE] Hypothesis/Instruction:', hypothesis);
+            console.log('[REFINE] CurrentHtml length:', currentHtml?.length || 0);
+            console.log('[REFINE] Context:', JSON.stringify(context));
+
             // Safely extract context values and escape them
             const gradeValue = context.gradePercent || context.grade || 50;
             const gradeLetter = context.grade || 'C';
