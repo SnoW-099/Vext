@@ -1,5 +1,5 @@
 // Netlify Function: VEXT Analysis Engine
-// Calls Claude 3.5 Sonnet with the VEXT system prompt
+// Calls Gemini 2.0 Flash with the VEXT system prompt
 
 const VEXT_SYSTEM_PROMPT = `**ROLE:**
 You are VEXT, a high-performance Tactical Conversion Architect. You don't just build websites; you engineer digital sales engines. Your output is a combination of psychological warfare, elite copywriting, and minimalist modern design.
@@ -23,7 +23,7 @@ Analyze the user's business vision and generate a 360° strategy that includes:
 - **CTA:** Only one primary action. Aggressive and clear.
 
 **OUTPUT FORMAT (MANDATORY - JSON ONLY):**
-You MUST respond with ONLY valid JSON. No markdown, no explanation, just pure JSON with this exact structure:
+You MUST respond with ONLY valid JSON. No markdown, no explanation, no code blocks, just pure JSON with this exact structure:
 
 {
   "analysis": {
@@ -38,7 +38,7 @@ You MUST respond with ONLY valid JSON. No markdown, no explanation, just pure JS
   "landing_page": {
     "headline": "Magnetic H1 headline",
     "subheadline": "Benefit-driven H2",
-    "tailwind_html": "<div class='min-h-screen bg-black text-white'>...</div>"
+    "tailwind_html": "<html><head><script src='https://cdn.tailwindcss.com'></script></head><body class='min-h-screen bg-black text-white'>...</body></html>"
   },
   "viral_kit": {
     "hooks": ["Hook 1 - attention grabber", "Hook 2 - curiosity driver"],
@@ -52,7 +52,7 @@ You MUST respond with ONLY valid JSON. No markdown, no explanation, just pure JS
   }
 }
 
-CRITICAL: The tailwind_html must be a complete, self-contained landing page using Tailwind CSS classes. Dark mode. Mobile-first. Include CDN link for Tailwind in a <script> tag.`;
+CRITICAL: The tailwind_html must be a COMPLETE HTML document with the Tailwind CDN script tag. Dark mode. Mobile-first.`;
 
 export default async (request, context) => {
     // CORS headers
@@ -85,39 +85,45 @@ export default async (request, context) => {
             );
         }
 
-        const ANTHROPIC_API_KEY = Netlify.env.get('ANTHROPIC_API_KEY');
+        const GEMINI_API_KEY = Netlify.env.get('GEMINI_API_KEY');
 
-        if (!ANTHROPIC_API_KEY) {
+        if (!GEMINI_API_KEY) {
             return new Response(
                 JSON.stringify({ error: 'API key not configured' }),
                 { status: 500, headers }
             );
         }
 
-        // Call Claude API
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': ANTHROPIC_API_KEY,
-                'anthropic-version': '2023-06-01'
-            },
-            body: JSON.stringify({
-                model: 'claude-sonnet-4-20250514',
-                max_tokens: 4096,
-                messages: [
-                    {
-                        role: 'user',
-                        content: `Analyze this business hypothesis and generate the full VEXT strategy:\n\n"${hypothesis}"`
+        // Call Gemini 2.0 Flash API
+        const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contents: [
+                        {
+                            parts: [
+                                {
+                                    text: `${VEXT_SYSTEM_PROMPT}\n\n---\n\nAnalyze this business hypothesis and generate the full VEXT strategy:\n\n"${hypothesis}"`
+                                }
+                            ]
+                        }
+                    ],
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 8192,
+                        responseMimeType: "application/json"
                     }
-                ],
-                system: VEXT_SYSTEM_PROMPT
-            })
-        });
+                })
+            }
+        );
 
         if (!response.ok) {
             const errorData = await response.text();
-            console.error('Anthropic API error:', errorData);
+            console.error('Gemini API error:', errorData);
             return new Response(
                 JSON.stringify({ error: 'AI service error', details: response.status }),
                 { status: 502, headers }
@@ -125,9 +131,19 @@ export default async (request, context) => {
         }
 
         const data = await response.json();
-        const aiContent = data.content[0].text;
 
-        // Parse the JSON response from Claude
+        // Extract the text from Gemini response
+        const aiContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!aiContent) {
+            console.error('No content in Gemini response:', data);
+            return new Response(
+                JSON.stringify({ error: 'Empty AI response' }),
+                { status: 500, headers }
+            );
+        }
+
+        // Parse the JSON response from Gemini
         let parsedResponse;
         try {
             // Extract JSON if wrapped in code blocks
