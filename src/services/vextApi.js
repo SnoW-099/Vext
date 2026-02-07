@@ -93,6 +93,9 @@ export async function refineHypothesis(currentHtml, instruction, context) {
     console.log('[VEXT API] Refining...', { instruction });
     const url = `${API_BASE}/.netlify/functions/analyze`;
 
+    // Detect if the message is potentially just chat to tip off the AI
+    const looksConversational = !/cambia|pon|quita|color|estilo|añade|borra|layout|diseño|web|seccion/i.test(instruction);
+
     const response = await fetchWithRetry(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -101,7 +104,9 @@ export async function refineHypothesis(currentHtml, instruction, context) {
             mode: 'refine',
             currentHtml,
             context,
-            system_prompt_addon: "Respond faster. Minimize unnecessary HTML bloat."
+            system_prompt_addon: looksConversational
+                ? "SPEED MODE: User is just chatting. Respond ONLY with chat_response. DO NOT generate or return the landing_page object. Be ultra-fast."
+                : "OPTIMIZED GENERATION: Only change what is requested. Keep HTML concise."
         })
     });
 
@@ -119,11 +124,11 @@ export async function refineHypothesis(currentHtml, instruction, context) {
         gradePercent: newGradePercent,
         gradeExplanation: data.analysis?.grade_explanation || context.gradeExplanation,
         chatResponse: data.chat_response || 'Cambios aplicados con éxito.',
-        websitePreview: {
-            title: data.landing_page?.headline || context.title,
-            tagline: data.landing_page?.subheadline || context.tagline,
-            html: data.landing_page?.tailwind_html ? injectPreviewStyles(data.landing_page.tailwind_html) : ''
-        }
+        websitePreview: data.landing_page && data.landing_page.tailwind_html ? {
+            title: data.landing_page.headline || context.title,
+            tagline: data.landing_page.subheadline || context.tagline,
+            html: injectPreviewStyles(data.landing_page.tailwind_html)
+        } : context.websitePreview // FIX: Keep old preview if AI didn't return a new one
     };
 }
 

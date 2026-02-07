@@ -43,8 +43,8 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
         if (data !== initialData) setHasUnsavedChanges(true)
     }, [data, initialData])
 
-    const handleSave = async () => {
-        setIsSaving(true);
+    const handleSave = async (silent = false) => {
+        if (!silent) setIsSaving(true);
         try {
             const projectToSave = {
                 ...currentProject, // Keep existing fields like createdAt
@@ -64,15 +64,17 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
             setProjectId(savedProject.id);
             setHasUnsavedChanges(false);
 
-            // Add system message
-            setChatHistory(prev => [...prev, {
-                role: 'ai',
-                content: `Project saved successfully at ${new Date().toLocaleTimeString()}.`
-            }]);
+            // ONLY add to chat if NOT silent
+            if (!silent) {
+                setChatHistory(prev => [...prev, {
+                    role: 'ai',
+                    content: `Project saved successfully at ${new Date().toLocaleTimeString()}.`
+                }]);
+            }
         } catch (error) {
             console.error('Save failed', error);
         } finally {
-            setTimeout(() => setIsSaving(false), 500);
+            if (!silent) setTimeout(() => setIsSaving(false), 500);
         }
     };
 
