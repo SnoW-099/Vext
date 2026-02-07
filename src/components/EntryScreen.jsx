@@ -73,43 +73,43 @@ function EntryScreen({ onScan }) {
             {/* Main Content */}
             <main className="entry-main">
                 <div className="entry-content">
-                    <h1 className="tagline">
-                        <span className="tagline-line">Describe your business.</span>
-                        <span className="tagline-line accent">We build the website.</span>
+                    <h1 className="main-title">
+                        VEXT<span className="accent">.AI</span>
                     </h1>
 
-                    <form className="input-section" onSubmit={handleSubmit}>
-                        <div className="input-wrapper">
-                            <textarea
-                                className="hypothesis-input mono"
-                                placeholder="[ INSERT BUSINESS HYPOTHESIS ]"
-                                value={hypothesis}
-                                onChange={(e) => setHypothesis(e.target.value)}
-                                rows={4}
-                            />
-                            <div className="input-decoration">
-                                <span className="decoration-corner tl" />
-                                <span className="decoration-corner tr" />
-                                <span className="decoration-corner bl" />
-                                <span className="decoration-corner br" />
-                            </div>
-                        </div>
+                    <p className="subtitle">
+                        VALIDACIÓN DE MERCADO Y ARQUITECTURA DE CONVERSIÓN
+                    </p>
+
+                    <div className="input-wrapper">
+                        <textarea
+                            className="hypothesis-input"
+                            placeholder="Describe tu idea de negocio (ej: 'Servicio de limpieza de sneakers premium a domicilio')..."
+                            value={hypothesis}
+                            onChange={(e) => setHypothesis(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSubmit();
+                                }
+                            }}
+                        />
 
                         <button
-                            type="submit"
-                            className={`scan-button ${isHovered ? 'hovered' : ''}`}
-                            onMouseEnter={() => setIsHovered(true)}
-                            onMouseLeave={() => setIsHovered(false)}
+                            className="scan-btn"
+                            onClick={handleSubmit}
                             disabled={!hypothesis.trim()}
                         >
-                            <span className="scan-text mono">[ SCAN ]</span>
-                            <span className="scan-arrow">→</span>
+                            ANALIZAR
                         </button>
-                    </form>
 
-                    <p className="hint mono text-muted">
-                        Example: "{currentExample}<span className="typing-cursor">|</span>"
-                    </p>
+                        <div className="hint-text">
+                            <span className="hint-label">PRUEBA:</span>
+                            <span className="hint-example">
+                                "{currentExample}<span className="typing-cursor">|</span>"
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </main>
 

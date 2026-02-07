@@ -200,10 +200,10 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                 <div className="side-panel desktop-only">
                     <div className="panel-header">
                         <span className="panel-title mono">
-                            {activePanel === 'grade' && 'VEXT GRADE'}
-                            {activePanel === 'psychology' && 'PSYCHOLOGY'}
-                            {activePanel === 'targeting' && 'TARGETING'}
-                            {activePanel === 'growth' && 'GROWTH KIT'}
+                            {activePanel === 'grade' && 'CALIFICACIÓN VEXT'}
+                            {activePanel === 'psychology' && 'PSICOLOGÍA'}
+                            {activePanel === 'targeting' && 'AUDIENCIA'}
+                            {activePanel === 'growth' && 'KIT DE CRECIMIENTO'}
                         </span>
                         <button className="panel-close" onClick={() => setActivePanel(null)}>
                             <X size={16} strokeWidth={1.5} />
@@ -220,13 +220,13 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                                 <div className="grade-bar">
                                     <div className="grade-fill" style={{ width: `${data?.gradePercent}%` }} />
                                 </div>
-                                <p className="grade-desc">{data?.gradeExplanation || "Analysis incomplete."}</p>
+                                <p className="grade-desc">{data?.gradeExplanation || "Análisis incompleto."}</p>
                             </div>
                         )}
 
                         {activePanel === 'psychology' && (
                             <div className="psychology-panel">
-                                <p className="panel-intro">Mental triggers identified for maximum conversion:</p>
+                                <p className="panel-intro">Disparadores mentales identificados para máxima conversión:</p>
                                 <div className="triggers-grid">
                                     {(data?.psychologyDetails || data?.psychology)?.map((item, i) => (
                                         <div key={i} className="trigger-item-detailed">
@@ -245,7 +245,7 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
 
                         {activePanel === 'targeting' && (
                             <div className="targeting-panel">
-                                <p className="panel-intro">Primary audience profile:</p>
+                                <p className="panel-intro">Perfil de audiencia principal:</p>
                                 <p className="target-audience">{data?.targeting}</p>
                             </div>
                         )}
@@ -254,10 +254,10 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                             <div className="growth-panel">
                                 <div className="locked-content">
                                     <Zap size={32} strokeWidth={1} className="locked-icon" />
-                                    <p className="locked-title mono">Proprietary Growth Scripts</p>
-                                    <p className="locked-desc">TikTok-ready viral scripts tailored to your business</p>
+                                    <p className="locked-title mono">Scripts de Crecimiento Propietarios</p>
+                                    <p className="locked-desc">Scripts virales para TikTok adaptados a tu negocio</p>
                                     <button className="unlock-btn">
-                                        <span>Unlock for 9€</span>
+                                        <span>Desbloquear por 9€</span>
                                         <ChevronRight size={16} />
                                     </button>
                                 </div>
@@ -283,12 +283,11 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                                 <h1 className="report-title">{data?.websitePreview?.title || hypothesis}</h1>
                                 <p className="report-tagline">{data?.websitePreview?.tagline}</p>
                                 <div className="report-section">
-                                    <span className="section-label mono">Strategy Overview</span>
+                                    <span className="section-label mono">Estrategia</span>
                                     <p className="section-text">
-                                        {data?.strategy || "Analysis in progress..."}
+                                        {data?.strategy || "Análisis en progreso..."}
                                     </p>
                                 </div>
-
                             </div>
                         </div>
 

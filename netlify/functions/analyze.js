@@ -122,7 +122,7 @@ exports.handler = async (event, context) => {
   "analysis": {
     "grade": ${gradeValue},
     "grade_letter": "${gradeLetter}",
-    "grade_explanation": "Explicación de 1 línea de la nota actual",
+    "grade_explanation": "Explicación detallada (2 frases) de por qué tiene esta nota, mencionando fortalezas y debilidades clave.",
     "psychology": []
   },
   "landing_page": {

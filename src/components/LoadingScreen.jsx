@@ -2,15 +2,15 @@ import { useState, useEffect } from 'react'
 import './LoadingScreen.css'
 
 const ANALYSIS_PHASES = [
-    { text: 'ANALYZING MARKET VIABILITY...', duration: 2000 },
-    { text: 'DECONSTRUCTING AUDIENCE PSYCHOLOGY...', duration: 2000 },
-    { text: 'ASSEMBLING CONVERSION ARCHITECTURE...', duration: 2000 },
-    { text: 'GENERATING VIRTUAL ASSETS...', duration: 2000 },
+    { text: 'ANALIZANDO VIABILIDAD DE MERCADO...', duration: 2000 },
+    { text: 'DECONSTRUYENDO PSICOLOGÍA DE AUDIENCIA...', duration: 2000 },
+    { text: 'ENSAMBLANDO ARQUITECTURA DE CONVERSIÓN...', duration: 2000 },
+    { text: 'GENERANDO ACTIVOS VIRTUALES...', duration: 2000 },
 ]
 
 const TRANSITION_PHASES = [
-    { text: 'LOADING PROJECT DATA...', duration: 800 },
-    { text: 'RECALIBRATING INTERFACE...', duration: 700 }
+    { text: 'CARGANDO DATOS DEL PROYECTO...', duration: 800 },
+    { text: 'RECALIBRANDO INTERFAZ...', duration: 700 }
 ]
 
 function LoadingScreen({ hypothesis, onComplete, mode = 'analysis' }) {

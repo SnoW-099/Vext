@@ -35,8 +35,8 @@ export async function analyzeHypothesis(hypothesis) {
         grade: data.analysis?.grade_letter || calculateGradeLetter(data.analysis?.grade),
         gradePercent: data.analysis?.grade || 65,
         gradeExplanation: data.analysis?.grade_explanation || getGradeExplanation(data.analysis?.grade),
-        strategy: data.analysis?.strategy || "Project analyzed. Ready for refinement.",
-        targeting: data.analysis?.target_audience || 'Target audience not defined.',
+        strategy: data.analysis?.strategy || "Proyecto analizado. Listo para refinar.",
+        targeting: data.analysis?.target_audience || 'Audiencia no definida.',
         psychology: data.analysis?.psychology?.map(p => p.trigger) || [],
         psychologyDetails: data.analysis?.psychology || [],
         websitePreview: {
@@ -53,12 +53,12 @@ export async function analyzeHypothesis(hypothesis) {
 }
 
 function getGradeExplanation(score) {
-    if (!score) return "Analysis incomplete.";
-    if (score >= 90) return "Exceptional potential. Minimal friction detected.";
-    if (score >= 80) return "Strong foundation with room for optimization.";
-    if (score >= 70) return "Valid concept but lacks differentiation.";
-    if (score >= 50) return "Significant risks detected in current model.";
-    return "Critical flaws in viability or execution.";
+    if (!score) return "El análisis no se ha completado correctamente. Inténtalo de nuevo.";
+    if (score >= 90) return "Tu idea tiene un potencial excepcional. La fricción de mercado detectada es mínima y la demanda parece alta.";
+    if (score >= 80) return "Tienes una base sólida. Con optimización en la oferta y el mensaje, podría ser un negocio líder.";
+    if (score >= 70) return "El concepto es válido, pero le falta diferenciación clara frente a competidores establecidos.";
+    if (score >= 50) return "Se detectan riesgos significativos en el modelo actual. Necesitas redefinir tu propuesta de valor única.";
+    return "Existen fallos críticos en la viabilidad o ejecución. El mercado podría estar saturado o la demanda ser insuficiente.";
 }
 
 export async function refineHypothesis(currentHtml, instruction, context) {

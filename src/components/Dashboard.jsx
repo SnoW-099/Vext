@@ -43,61 +43,68 @@ function Dashboard({ onNewProject, onLoadProject }) {
                 </button>
             </header>
 
-            <main className="projects-grid">
-                {/* Empty State */}
+            <main className="dashboard-content">
+                <div className="projects-grid">
+                    {/* New Project Card */}
+                    <div className="project-card new-project" onClick={onNewProject}>
+                        <div className="card-icon">+</div>
+                        <h3>Nuevo Proyecto</h3>
+                        <p>Comenzar análisis</p>
+                    </div>
+
+                    {/* Saved Projects */}
+                    {projects.map((project) => (
+                        <div
+                            key={project.id}
+                            className="project-card"
+                            onClick={() => onLoadProject(project)}
+                        >
+                            <div className="card-top">
+                                <span className={`grade-badge grade-${project.grade || 'C'}`}>
+                                    {project.grade || 'C'}
+                                </span>
+                                <button
+                                    className="delete-btn"
+                                    onClick={(e) => handleDelete(e, project.id)}
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
+
+                            <div className="card-content">
+                                <h3 className="project-title">
+                                    {project.websitePreview?.title || project.hypothesis?.slice(0, 40) || 'Sin Título'}
+                                </h3>
+                                <p className="project-tagline">
+                                    {project.websitePreview?.tagline || 'Sin descripción'}
+                                </p>
+                            </div>
+
+                            <div className="card-footer">
+                                <div className="meta-info">
+                                    <Calendar size={14} />
+                                    <span>{formatDate(project.updatedAt)}</span>
+                                </div>
+                                <div className="open-indicator">
+                                    <ArrowRight size={16} />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
                 {projects.length === 0 && (
                     <div className="empty-state">
-                        <span className="empty-icon">📂</span>
-                        <h3>No Projects Found</h3>
-                        <p>Start a new scan to analyze your first hypothesis.</p>
+                        <h2>Bienvenido a VEXT</h2>
+                        <p>Tu motor de análisis de viabilidad con IA.</p>
                         <button className="cta-btn" onClick={onNewProject}>
-                            Start Analysis
+                            INICIAR ANÁLISIS
                         </button>
-                    </div>
                 )}
-
-                {/* Project Cards */}
-                {projects.map(project => (
-                    <div
-                        key={project.id}
-                        className="project-card"
-                        onClick={() => onLoadProject(project)}
-                    >
-                        <div className="card-top">
-                            <span className={`grade-badge grade-${project.grade || 'C'}`}>
-                                {project.grade || 'C'}
-                            </span>
-                            <button
-                                className="delete-btn"
-                                onClick={(e) => handleDelete(e, project.id)}
-                            >
-                                <Trash2 size={16} />
-                            </button>
-                        </div>
-
-                        <div className="card-content">
-                            <h3 className="project-title">
-                                {project.websitePreview?.title || project.hypothesis?.slice(0, 40) || 'Untitled Project'}
-                            </h3>
-                            <p className="project-tagline">
-                                {project.websitePreview?.tagline || 'No tagline generated'}
-                            </p>
-                        </div>
-
-                        <div className="card-footer">
-                            <div className="meta-info">
-                                <Calendar size={14} />
-                                <span>{formatDate(project.updatedAt)}</span>
-                            </div>
-                            <div className="open-indicator">
-                                <ArrowRight size={16} />
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </main>
+                    </main>
         </div>
     );
 }
+
 
 export default Dashboard;
