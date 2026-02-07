@@ -120,25 +120,30 @@ exports.handler = async (event, context) => {
             });
 
             if (validModels.length > 0) {
-                const bestModel = validModels[0];
-                // Remove 'models/' prefix if present because callGemini adds it back via the URL structure or handles it
-                // Actually callGemini uses `models/${model}`.
-                // bestModel.name is like "models/gemini-1.5-flash".
-                // So we need to pass just "gemini-1.5-flash"
-                const modelName = bestModel.name.replace(/^models\//, '');
+                console.log(`Found ${validModels.length} candidates. Trying in order of preference...`);
 
-                console.log(`Auto-discovered best model: ${modelName}`);
-                const result = await callGemini(hypothesis, modelName, GEMINI_API_KEY);
-                return { statusCode: 200, headers, body: JSON.stringify(result) };
+                for (const model of validModels) {
+                    const modelName = model.name.replace(/^models\//, '');
+                    console.log(`Trying auto-discovered model: ${modelName}`);
+
+                    try {
+                        const result = await callGemini(hypothesis, modelName, GEMINI_API_KEY);
+                        console.log(`Success with ${modelName}`);
+                        return { statusCode: 200, headers, body: JSON.stringify(result) };
+                    } catch (modelError) {
+                        console.warn(`Failed with ${modelName}:`, modelError.message);
+                        // Continue to next model
+                    }
+                }
             }
 
-            console.error('No models with generateContent capability found.');
+            console.error('All auto-discovered models failed.');
             return {
                 statusCode: 502,
                 headers,
                 body: JSON.stringify({
                     error: 'All AI models failed',
-                    message: 'No compatible models found in auto-discovery.',
+                    message: 'Tried all available models but none worked. Check quotas.',
                     debug_models: modelsData.models.map(m => ({ name: m.name, methods: m.supportedGenerationMethods }))
                 })
             };
