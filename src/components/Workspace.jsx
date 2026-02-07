@@ -214,13 +214,13 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                         {activePanel === 'grade' && (
                             <div className="grade-panel">
                                 <div className="grade-hero">
-                                    <span className="grade-letter">{data?.grade}</span>
-                                    <span className="grade-percent mono">{data?.gradePercent}%</span>
+                                    <span className="grade-letter">{data?.grade || '?'}</span>
+                                    <span className="grade-percent mono">{data?.gradePercent || 0}%</span>
                                 </div>
                                 <div className="grade-bar">
-                                    <div className="grade-fill" style={{ width: `${data?.gradePercent}%` }} />
+                                    <div className="grade-fill" style={{ width: `${data?.gradePercent || 0}%` }} />
                                 </div>
-                                <p className="grade-desc">{data?.gradeExplanation || "Análisis incompleto."}</p>
+                                <p className="grade-desc">{data?.gradeExplanation || "Pendiente de cálculo."}</p>
                             </div>
                         )}
 
@@ -280,12 +280,16 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                                 <span className="message-time">Just now</span>
                             </div>
                             <div className="message-content">
-                                <h1 className="report-title">{data?.websitePreview?.title || hypothesis}</h1>
-                                <p className="report-tagline">{data?.websitePreview?.tagline}</p>
+                                <h1 className="report-title">
+                                    {data?.websitePreview?.title || data?.hypothesis || 'Sin Título'}
+                                </h1>
+                                <p className="report-tagline">
+                                    {data?.websitePreview?.tagline || 'Análisis generado por VEXT AI'}
+                                </p>
                                 <div className="report-section">
                                     <span className="section-label mono">Estrategia</span>
                                     <p className="section-text">
-                                        {data?.strategy || "Análisis en progreso..."}
+                                        {data?.strategy || "Análisis completado. Revisa los paneles laterales para más detalles."}
                                     </p>
                                 </div>
                             </div>
