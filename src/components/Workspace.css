@@ -422,16 +422,19 @@
 /* Mobile page content - each page is fullscreen */
 .mobile-page {
     display: none;
+    /* Hidden by default on desktop */
     flex-direction: column;
     flex: 1;
     min-height: calc(100dvh - 120px);
-    /* Header + Tab bar */
     padding: var(--space-lg);
     overflow-y: auto;
 }
 
-.mobile-page.active {
-    display: flex;
+/* On mobile, show only the active page */
+@media (max-width: 768px) {
+    .mobile-page.active {
+        display: flex;
+    }
 }
 
 .report-header {

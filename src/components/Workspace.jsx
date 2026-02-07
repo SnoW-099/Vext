@@ -206,7 +206,7 @@ function Workspace({ hypothesis, data, onReset }) {
           ============================================ */}
 
             {/* Page 1: Report */}
-            <div className={`mobile-page mobile-only ${mobilePage === 'report' ? 'active' : ''}`}>
+            <div className={`mobile-page ${mobilePage === 'report' ? 'active' : ''}`}>
                 <div className="report-header mono">
                     <span className="report-label">ANALYSIS COMPLETE</span>
                     <span className="report-dot" />
@@ -226,7 +226,7 @@ function Workspace({ hypothesis, data, onReset }) {
             </div>
 
             {/* Page 2: Stats */}
-            <div className={`mobile-page mobile-only ${mobilePage === 'stats' ? 'active' : ''}`}>
+            <div className={`mobile-page ${mobilePage === 'stats' ? 'active' : ''}`}>
                 <div className="mobile-stats">
                     <div className="grade-hero-mobile">
                         <span className="grade-letter">{data?.grade}</span>
@@ -256,7 +256,7 @@ function Workspace({ hypothesis, data, onReset }) {
             </div>
 
             {/* Page 3: Preview */}
-            <div className={`mobile-page mobile-only ${mobilePage === 'preview' ? 'active' : ''}`}>
+            <div className={`mobile-page ${mobilePage === 'preview' ? 'active' : ''}`}>
                 <div className="mobile-preview-content">
                     <div className="phone-frame-large">
                         <div className="phone-notch" />
