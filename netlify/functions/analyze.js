@@ -1,6 +1,6 @@
-// VEXT Analysis Engine - TOTAL RELIABILITY v6
-// Using 2026-tested stable model paths
-const PRIMARY_MODEL = 'gemini-1.5-flash';
+// VEXT Analysis Engine - TOTAL RELIABILITY v7
+// Focused on resolving "Model not found" errors
+const PRIMARY_MODEL = 'gemini-1.5-flash-latest';
 
 exports.handler = async (event) => {
     const headers = {
@@ -12,7 +12,7 @@ exports.handler = async (event) => {
 
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
 
-    console.log('[VEXT] Starting execution...');
+    console.log('[VEXT] Execution started.');
 
     try {
         let rawBody = event.body;
@@ -25,62 +25,70 @@ exports.handler = async (event) => {
         const { hypothesis, mode = 'create', currentHtml = '', context: userContext = {}, is_chat_only = false } = body;
         const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-        if (!GEMINI_API_KEY) throw new Error('API Key missing');
+        if (!GEMINI_API_KEY) throw new Error('API Key missing in environment');
 
         let isChat = !!is_chat_only;
-        let systemPrompt = `Eres VEXT, un analista experto. Genera un JSON con este formato: { "analysis": { "grade": 80, ... }, "landing_page": { "tailwind_html": "..." } }`;
+        let systemPrompt = `Eres VEXT, un analista experto. Responde siempre en español. Formato JSON.`;
         let userContent = `IDEA: "${hypothesis}"`;
         let maxTokens = 4000;
 
         if (isChat) {
-            systemPrompt = `Eres VEXT. Responde de forma muy breve e inteligente (máx 2 frases).`;
+            systemPrompt = `Eres VEXT. Responde muy brevemente (máx 2 frases).`;
             userContent = `MENSAJE: "${hypothesis}"`;
             maxTokens = 800;
         } else if (mode === 'refine') {
             const gradeVal = userContext.gradePercent || 50;
-            systemPrompt = `Eres VEXT. Modifica el código HTML. Responde SOLO JSON con { "chat_response": "...", "analysis": { "grade": ${gradeVal}, ... }, "landing_page": { "tailwind_html": "..." } }`;
+            systemPrompt = `Eres VEXT. Modifica el HTML. Responde SOLO JSON con { "chat_response": "...", "analysis": { "grade": ${gradeVal}, ... }, "landing_page": { "tailwind_html": "..." } }`;
             userContent = `INSTRUCCIÓN: "${hypothesis}"\nHTML: ${currentHtml}`;
         }
 
-        // --- MODEL & VERSION MATRIX ---
+        // --- ATTEMPT MATRIX (Aliases are more resilient) ---
         const configs = [
+            { ver: 'v1beta', mod: 'gemini-1.5-flash-latest' },
             { ver: 'v1beta', mod: 'gemini-1.5-flash' },
-            { ver: 'v1', mod: 'gemini-1.5-flash' },
-            { ver: 'v1beta', mod: 'gemini-1.5-pro' },
-            { ver: 'v1beta', mod: 'gemini-pro' }
+            { ver: 'v1beta', mod: 'gemini-1.5-pro-latest' },
+            { ver: 'v1', mod: 'gemini-1.5-flash' }
         ];
 
-        let lastErrorMsg = "No models available";
+        let lastErrorMsg = "No connectivity";
 
         for (const config of configs) {
             try {
-                console.log(`[VEXT] Trying ${config.mod} via ${config.ver}...`);
+                console.log(`[VEXT] Trying ${config.mod} (${config.ver})`);
                 const result = await fetchGemini(systemPrompt, userContent, GEMINI_API_KEY, config.ver, config.mod, maxTokens, isChat);
+                console.log(`[VEXT] Success with ${config.mod}`);
                 return { statusCode: 200, headers, body: JSON.stringify(result) };
             } catch (err) {
-                console.warn(`[VEXT] Fail ${config.mod}/${config.ver}: ${err.message}`);
+                console.warn(`[VEXT] ${config.mod} failed: ${err.message}`);
                 lastErrorMsg = err.message;
-                // If it's a key error, don't keep trying models
                 if (err.message.includes('API_KEY')) break;
             }
         }
 
+        // --- FORENSIC: List models to console if all failed ---
+        try {
+            const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`;
+            const listRes = await fetch(listUrl);
+            const listData = await listRes.json();
+            console.log('[VEXT-LOGS] Available models for this key:', listData.models?.map(m => m.name).join(', '));
+        } catch (e) {
+            console.error('[VEXT-LOGS] Could not list models:', e.message);
+        }
+
         // --- FALLBACK ---
-        console.error('[VEXT] All models failed. Fallback triggered.');
-        const fallback = {
-            chat_response: `[VEXT-SISTEMA] Error técnico: ${lastErrorMsg.slice(0, 50)}. Estamos optimizando el motor. Por favor, intenta de nuevo en un momento.`,
-            analysis: { grade: 70, grade_letter: "B", grade_explanation: "Análisis en pausa por saturación de red." },
-            landing_page: { headline: "VEXT Safety Mode", tailwind_html: currentHtml || "<!-- Safe -->" }
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                chat_response: `[VEXT] El servidor de IA reporta: "${lastErrorMsg}". Estoy intentando reconectar. Por favor, reintenta en 5 segundos.`,
+                analysis: { grade: 40, grade_letter: "D", grade_explanation: "Error de conexión con el motor de IA." },
+                landing_page: { headline: "Service Unavailable", tailwind_html: currentHtml || "<!-- Error -->" }
+            })
         };
-        return { statusCode: 200, headers, body: JSON.stringify(fallback) };
 
     } catch (error) {
-        console.error('[VEXT] Fatal handler error:', error.message);
-        return {
-            statusCode: 500,
-            headers,
-            body: JSON.stringify({ error: 'Server Error', details: error.message })
-        };
+        console.error('[VEXT] Global Error:', error.message);
+        return { statusCode: 500, headers, body: JSON.stringify({ error: error.message }) };
     }
 };
 
@@ -108,11 +116,11 @@ async function fetchGemini(sys, user, key, version, model, maxT, isChat) {
 
     const data = await response.json();
     const candidate = data.candidates?.[0];
-    if (!candidate) throw new Error('No candidates');
-    if (candidate.finishReason === 'SAFETY') throw new Error('Blocked: Safety');
+    if (!candidate) throw new Error('Empty response');
+    if (candidate.finishReason === 'SAFETY') throw new Error('Safety block');
 
     const aiText = candidate.content?.parts?.[0]?.text;
-    if (!aiText) throw new Error('Empty AI response');
+    if (!aiText) throw new Error('No text returned');
 
     if (isChat) return { chat_response: aiText.trim() };
 
@@ -122,6 +130,6 @@ async function fetchGemini(sys, user, key, version, model, maxT, isChat) {
         return JSON.parse(jsonStr);
     } catch (e) {
         if (aiText.length < 500) return { chat_response: aiText };
-        throw new Error('AI format invalid');
+        throw new Error('Invalid JSON format from AI');
     }
 }
