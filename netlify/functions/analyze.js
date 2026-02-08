@@ -1,6 +1,5 @@
-// VEXT Analysis Engine - TOTAL RELIABILITY v7
-// Focused on resolving "Model not found" errors
-const PRIMARY_MODEL = 'gemini-1.5-flash-latest';
+// VEXT Analysis Engine - 2026 FRONTIER v8
+const PRIMARY_MODEL = 'gemini-2.5-flash';
 
 exports.handler = async (event) => {
     const headers = {
@@ -12,7 +11,7 @@ exports.handler = async (event) => {
 
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
 
-    console.log('[VEXT] Execution started.');
+    console.log('[VEXT] Global Execution v8');
 
     try {
         let rawBody = event.body;
@@ -25,10 +24,10 @@ exports.handler = async (event) => {
         const { hypothesis, mode = 'create', currentHtml = '', context: userContext = {}, is_chat_only = false } = body;
         const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-        if (!GEMINI_API_KEY) throw new Error('API Key missing in environment');
+        if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY is not set');
 
         let isChat = !!is_chat_only;
-        let systemPrompt = `Eres VEXT, un analista experto. Responde siempre en español. Formato JSON.`;
+        let systemPrompt = `Eres VEXT, un analista de élite. Responde siempre en español. Formato JSON.`;
         let userContent = `IDEA: "${hypothesis}"`;
         let maxTokens = 4000;
 
@@ -42,52 +41,50 @@ exports.handler = async (event) => {
             userContent = `INSTRUCCIÓN: "${hypothesis}"\nHTML: ${currentHtml}`;
         }
 
-        // --- ATTEMPT MATRIX (Aliases are more resilient) ---
+        // --- 2026 MODEL MATRIX ---
         const configs = [
-            { ver: 'v1beta', mod: 'gemini-1.5-flash-latest' },
-            { ver: 'v1beta', mod: 'gemini-1.5-flash' },
-            { ver: 'v1beta', mod: 'gemini-1.5-pro-latest' },
-            { ver: 'v1', mod: 'gemini-1.5-flash' }
+            { ver: 'v1beta', mod: 'gemini-2.5-flash' },
+            { ver: 'v1beta', mod: 'gemini-2.5-pro' },
+            { ver: 'v1beta', mod: 'gemini-3-flash-preview' },
+            { ver: 'v1beta', mod: 'gemini-1.5-flash' }, // Legacy fallback
+            { ver: 'v1', mod: 'gemini-1.5-flash' }  // Ultra-Legacy
         ];
 
-        let lastErrorMsg = "No connectivity";
+        let errors = [];
 
         for (const config of configs) {
             try {
-                console.log(`[VEXT] Trying ${config.mod} (${config.ver})`);
+                console.log(`[VEXT] Attempting ${config.mod} (${config.ver})`);
                 const result = await fetchGemini(systemPrompt, userContent, GEMINI_API_KEY, config.ver, config.mod, maxTokens, isChat);
-                console.log(`[VEXT] Success with ${config.mod}`);
                 return { statusCode: 200, headers, body: JSON.stringify(result) };
             } catch (err) {
-                console.warn(`[VEXT] ${config.mod} failed: ${err.message}`);
-                lastErrorMsg = err.message;
+                console.warn(`[VEXT] Skip ${config.mod}: ${err.message}`);
+                errors.push(`${config.mod}: ${err.message.slice(0, 50)}`);
                 if (err.message.includes('API_KEY')) break;
             }
         }
 
-        // --- FORENSIC: List models to console if all failed ---
+        // --- EMERGENCY DIAGNOSTIC ---
+        let availableModels = "Unknown";
         try {
             const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`;
             const listRes = await fetch(listUrl);
             const listData = await listRes.json();
-            console.log('[VEXT-LOGS] Available models for this key:', listData.models?.map(m => m.name).join(', '));
-        } catch (e) {
-            console.error('[VEXT-LOGS] Could not list models:', e.message);
-        }
+            availableModels = listData.models?.map(m => m.name.split('/').pop()).join(', ') || "NoneFound";
+        } catch (e) { availableModels = "ErrorListingModels"; }
 
-        // --- FALLBACK ---
         return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
-                chat_response: `[VEXT] El servidor de IA reporta: "${lastErrorMsg}". Estoy intentando reconectar. Por favor, reintenta en 5 segundos.`,
-                analysis: { grade: 40, grade_letter: "D", grade_explanation: "Error de conexión con el motor de IA." },
-                landing_page: { headline: "Service Unavailable", tailwind_html: currentHtml || "<!-- Error -->" }
+                chat_response: `[VEXT] Error de Modelos. Intentados: ${errors.join(' | ')}. Tu cuenta dispone de: ${availableModels}.`,
+                analysis: { grade: 0, grade_letter: "F", grade_explanation: "Fallo de sincronización de modelos." },
+                landing_page: { headline: "Config Error", tailwind_html: currentHtml || "<!-- Error -->" }
             })
         };
 
     } catch (error) {
-        console.error('[VEXT] Global Error:', error.message);
+        console.error('[VEXT] Fatal:', error.message);
         return { statusCode: 500, headers, body: JSON.stringify({ error: error.message }) };
     }
 };
@@ -106,7 +103,7 @@ async function fetchGemini(sys, user, key, version, model, maxT, isChat) {
 
     if (!response.ok) {
         const text = await response.text();
-        let msg = `Error ${response.status}`;
+        let msg = `Err ${response.status}`;
         try {
             const j = JSON.parse(text);
             msg = j.error?.message || msg;
@@ -116,11 +113,11 @@ async function fetchGemini(sys, user, key, version, model, maxT, isChat) {
 
     const data = await response.json();
     const candidate = data.candidates?.[0];
-    if (!candidate) throw new Error('Empty response');
-    if (candidate.finishReason === 'SAFETY') throw new Error('Safety block');
+    if (!candidate) throw new Error('No candidates');
+    if (candidate.finishReason === 'SAFETY') throw new Error('Safety filter');
 
     const aiText = candidate.content?.parts?.[0]?.text;
-    if (!aiText) throw new Error('No text returned');
+    if (!aiText) throw new Error('No text');
 
     if (isChat) return { chat_response: aiText.trim() };
 
@@ -130,6 +127,6 @@ async function fetchGemini(sys, user, key, version, model, maxT, isChat) {
         return JSON.parse(jsonStr);
     } catch (e) {
         if (aiText.length < 500) return { chat_response: aiText };
-        throw new Error('Invalid JSON format from AI');
+        throw new Error('Invalid JSON format');
     }
 }
