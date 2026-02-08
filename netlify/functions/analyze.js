@@ -68,38 +68,35 @@ exports.handler = async (event) => {
             }`;
             userContent = `INSTRUCCIÓN DEL USUARIO: "${hypothesis}"\nCÓDIGO HTML ACTUAL: ${currentHtml}`;
         } else {
-            // Initial analysis - THE PRODUCTION ENGINE v3.0 (IMMACULATE DESIGN)
+            // Initial analysis - THE PRODUCTION ENGINE v3.1 (STABLE & RESPONSIVE)
             systemPrompt += `
-            ACTÚA COMO UN SENIOR PRODUCT DESIGNER DE ELITE (ESTILO VERCEL/APPLE/LINEAR).
-            Tu misión es crear una Landing Page de impacto visual absoluto y conversión máxima.
+            ACTÚA COMO UN SENIOR UI/UX ENGINEER. Tu objetivo es una web impecable y RESPONSIVA.
             
-            DIRECCIÓN DE ARTE OBLIGATORIA:
-            1. ESPACIADO Y LAYOUT: Prohibido centrar todo en una columna estrecha. Usa secciones de ancho completo (max-w-7xl mx-auto px-6).
-            2. TIPOGRAFÍA MODERNA: Headlines masivos (text-6xl a text-8xl), tracking-tighter, y gradientes elegantes de blanco a gris plata.
-            3. IMÁGENES DE ALTO RENDIMIENTO: Usa Unsplash con IDs específicos para dar realismo.
-               - Ej: Tecnología/IA (photo-1677442136019-21780ecad995), Business (photo-1460925895917-afdab827c52f), Lifestyle (photo-1511367461989-f85a21fda167).
-            4. COMPONENTES DE ALTA FIDELIDAD:
-               - Bento Grids para mostrar características de forma moderna.
-               - Glassmorphism real: bg-white/5 backdrop-blur-xl border border-white/10.
-               - Micro-animaciones: hover:scale-[1.02] transition-transform.
-            5. ESTRUCTURA: Nav fixed (blur), Hero explosivo, Marquee de "Confianza", Grid de beneficios, Pricing Profesional, Footer minimalista.
+            REGLAS DE ORO DE DISEÑO (PROXIMIDAD Y ESCALA):
+            1. TIPOGRAFÍA RESPONSIVA: Usa clases como "text-4xl md:text-7xl". NUNCA uses text-7xl fijo (rompe en móvil). Usa "leading-tight" y "tracking-tighter".
+            2. NAVEGACIÓN LIMPIA: El Nav debe ser simple. Evita que ocupe demasiado espacio o tape el texto. Usa "sticky top-0 z-50 bg-black/50 backdrop-blur-lg".
+            3. IMÁGENES QUE CARGAN: Usa IDs de Unsplash variados. Usa "w-full aspect-video object-cover rounded-2xl" para que se vean bien.
+            4. BENTO GRIDS INTELIGENTES: En móvil usa "grid-cols-1", en desktop "md:grid-cols-3". 
+            5. ESPACIADO: Usa "px-6" para móvil y "md:px-12" para desktop. No dejes que el texto toque los bordes.
+            
+            ESTILO VISUAL: Minimalismo técnico. Mucho espacio negativo, bordes muy finos (border-white/5), tipografía Sans (Inter).
             
             JSON OUTPUT STRICT:
             {
               "analysis": { 
                  "grade": 0-100, 
                  "grade_letter": "A", 
-                 "grade_explanation": "Crítica brutal, experta y directa...", 
-                 "target_audience": "Perfil detallado...", 
+                 "grade_explanation": "Análisis experto...", 
+                 "target_audience": "...", 
                  "psychology": [ { "trigger": "...", "explanation": "..." } ],
-                 "strategy": "Plan de ejecución..." 
+                 "strategy": "..." 
               },
               "landing_page": { 
                  "headline": "...", 
                  "subheadline": "...", 
-                 "tailwind_html": "<!-- Código HTML de Nivel Producción 2026 -->" 
+                 "tailwind_html": "<!-- Código HTML PROFESIONAL, RESPONSIVO y SIN ERRORES DE DISEÑO -->" 
               },
-              "viral_kit": { "hooks": ["Gancho Disruptivo"], "scripts": ["Guion Pro"] }
+              "viral_kit": { "hooks": [], "scripts": [] }
             }`;
         }
 
