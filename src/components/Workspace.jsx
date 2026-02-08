@@ -24,6 +24,7 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
     const [previewExpanded, setPreviewExpanded] = useState(false)
     const [mobilePage, setMobilePage] = useState('report') // 'report' | 'stats' | 'preview'
     const [isChatOpen, setIsChatOpen] = useState(false)
+    const [previewDevice, setPreviewDevice] = useState('mobile') // 'mobile' | 'desktop'
 
     // Chat & Project State
     const [chatInput, setChatInput] = useState('')
@@ -478,7 +479,7 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
             </div>
 
             {/* ============================================
-          DESKTOP: Floating Preview
+          DESKTOP: Multi-Device Preview
           ============================================ */}
             <div className={`floating-preview desktop-only ${previewExpanded ? 'expanded' : ''}`}>
                 {!previewExpanded ? (
@@ -491,39 +492,63 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                                 <div className="thumb-cta" />
                             </div>
                         </div>
-                        <span className="preview-label mono">PREVIEW</span>
+                        <span className="preview-label mono">VIEW DESIGN</span>
                     </button>
                 ) : (
                     <div className="preview-expanded">
-                        <button className="preview-close" onClick={() => setPreviewExpanded(false)}>
-                            <X size={20} strokeWidth={1.5} />
-                        </button>
-                        <div className="phone-frame-large">
-                            <div className="phone-notch" />
-                            <div className="phone-screen">
-                                {data?.websitePreview?.html ? (
-                                    <iframe
-                                        srcDoc={data.websitePreview.html}
-                                        className="preview-iframe"
-                                        title="Landing Page Preview"
-                                        sandbox="allow-scripts"
-                                    />
-                                ) : (
-                                    <>
-                                        <div className="preview-hero">
-                                            <h2 className="preview-title">{data?.websitePreview?.title || 'Your Business'}</h2>
-                                            <p className="preview-tagline">{data?.websitePreview?.tagline}</p>
-                                        </div>
-                                        <div className="preview-image">AI Generated</div>
-                                        <button className="preview-cta-btn">Get Started</button>
-                                        <div className="preview-features">
-                                            <span>✓ Fast Delivery</span>
-                                            <span>✓ Premium Quality</span>
-                                        </div>
-                                    </>
-                                )}
+                        <div className="preview-controls">
+                            <div className="device-selector mono">
+                                <button
+                                    className={`device-btn ${previewDevice === 'mobile' ? 'active' : ''}`}
+                                    onClick={() => setPreviewDevice('mobile')}
+                                >
+                                    MOBILE
+                                </button>
+                                <button
+                                    className={`device-btn ${previewDevice === 'desktop' ? 'active' : ''}`}
+                                    onClick={() => setPreviewDevice('desktop')}
+                                >
+                                    DESKTOP
+                                </button>
                             </div>
+                            <button className="preview-close" onClick={() => setPreviewExpanded(false)}>
+                                <X size={24} strokeWidth={1.5} />
+                            </button>
                         </div>
+
+                        <div className={`preview-viewport ${previewDevice}`}>
+                            {previewDevice === 'mobile' ? (
+                                <div className="phone-frame-large">
+                                    <div className="phone-notch" />
+                                    <div className="phone-screen">
+                                        <iframe
+                                            srcDoc={data?.websitePreview?.html}
+                                            className="preview-iframe"
+                                            title="Landing Page Preview Mobile"
+                                            sandbox="allow-scripts"
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="desktop-frame">
+                                    <div className="browser-header">
+                                        <div className="browser-dots">
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                        <div className="browser-address mono">{data?.websitePreview?.title?.toLowerCase().replace(/\s+/g, '-') + '.vext.ai'}</div>
+                                    </div>
+                                    <div className="browser-screen">
+                                        <iframe
+                                            srcDoc={data?.websitePreview?.html}
+                                            className="preview-iframe"
+                                            title="Landing Page Preview Desktop"
+                                            sandbox="allow-scripts"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         <button className="launch-btn">
                             <Zap size={18} />
                             <span>VEXT LAUNCH — 9€</span>
