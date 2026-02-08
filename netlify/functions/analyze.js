@@ -1,5 +1,5 @@
-// VEXT Analysis Engine - PRODUCTION STABLE v10
-const PRIMARY_MODEL = 'gemini-2.0-flash';
+// VEXT Analysis Engine - GROQ HYPER-SPEED EDITION
+const GROQ_MODEL = 'llama-3.3-70b-versatile';
 
 exports.handler = async (event) => {
     const headers = {
@@ -11,7 +11,7 @@ exports.handler = async (event) => {
 
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
 
-    console.log('[VEXT] Production Execution v10');
+    console.log('[VEXT] Groq Execution Started');
 
     try {
         let rawBody = event.body;
@@ -22,109 +22,98 @@ exports.handler = async (event) => {
         if (!rawBody) throw new Error('Body empty');
         const body = JSON.parse(rawBody);
         const { hypothesis, mode = 'create', currentHtml = '', context: userContext = {}, is_chat_only = false } = body;
-        const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+        const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-        if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY is not set');
+        if (!GROQ_API_KEY) throw new Error('GROQ_API_KEY is not set in Netlify environment');
 
         let isChat = !!is_chat_only;
-        let systemPrompt = `Eres VEXT, un analista de élite. Responde siempre en español. Formato JSON.`;
-        let userContent = `IDEA: "${hypothesis}"`;
+        let systemPrompt = `Eres VEXT, un analista de negocios experto. Tu misión es analizar ideas y generar landing pages de alto impacto.
+        RESPONDE SIEMPRE EN ESPAÑOL.
+        SIEMPRE RESPONDE ÚNICAMENTE CON UN OBJETO JSON VÁLIDO.`;
+
+        let userContent = `Analiza esta idea de negocio: "${hypothesis}"`;
         let maxTokens = 4000;
 
         if (isChat) {
-            systemPrompt = `Eres VEXT. Responde muy brevemente (máx 2 frases).`;
-            userContent = `MENSAJE: "${hypothesis}"`;
+            systemPrompt = `Eres VEXT. Responde de forma muy breve e inteligente (máximo 2 frases).`;
+            userContent = `Mensaje del usuario: "${hypothesis}"`;
             maxTokens = 800;
         } else if (mode === 'refine') {
             const gradeVal = userContext.gradePercent || 50;
-            systemPrompt = `Eres VEXT. Modifica el HTML. Responde SOLO JSON con { "chat_response": "...", "analysis": { "grade": ${gradeVal}, ... }, "landing_page": { "tailwind_html": "..." } }`;
-            userContent = `INSTRUCCIÓN: "${hypothesis}"\nHTML: ${currentHtml}`;
+            systemPrompt = `Eres VEXT. Tu tarea es modificar el código HTML de la landing page según las instrucciones.
+            RESPONDE ÚNICAMENTE CON UN OBJETO JSON que incluya:
+            1. "chat_response": Explicación breve del cambio.
+            2. "analysis": Objeto con el análisis actualizado (grade: ${gradeVal}).
+            3. "landing_page": Objeto con el nuevo "tailwind_html".`;
+            userContent = `Instrucción: "${hypothesis}"\nCódigo HTML actual: ${currentHtml}`;
+        } else {
+            // Initial analysis prompt
+            systemPrompt += `
+            Estructura del JSON:
+            {
+              "analysis": { "grade": 0-100, "grade_letter": "A", "grade_explanation": "...", "target_audience": "...", "psychology": [], "strategy": "..." },
+              "landing_page": { "valentine_code": "...", "headline": "...", "subheadline": "...", "tailwind_html": "..." },
+              "viral_kit": { "hooks": [], "scripts": [] }
+            }`;
         }
 
-        // --- RELIABLE MODEL MATRIX (2026 Stable) ---
-        const configs = [
-            { ver: 'v1beta', mod: 'gemini-2.0-flash' },
-            { ver: 'v1beta', mod: 'gemini-2.0-flash-lite' },
-            { ver: 'v1beta', mod: 'gemini-1.5-flash' },
-            { ver: 'v1', mod: 'gemini-1.5-flash' }
-        ];
-
-        let errors = [];
-        let quotaHit = false;
-
-        for (const config of configs) {
-            try {
-                console.log(`[VEXT] Attempting ${config.mod}`);
-                const result = await fetchGemini(systemPrompt, userContent, GEMINI_API_KEY, config.ver, config.mod, maxTokens, isChat);
-                return { statusCode: 200, headers, body: JSON.stringify(result) };
-            } catch (err) {
-                console.warn(`[VEXT] Skip ${config.mod}: ${err.message}`);
-                errors.push(`${config.mod}: ${err.message}`);
-                if (err.message.toLowerCase().includes('quota')) quotaHit = true;
-                if (err.message.includes('API_KEY')) break;
-            }
-        }
-
-        // --- SMART FALLBACK ---
-        let friendlyMsg = "El motor de IA está saturado temporalmente.";
-        if (quotaHit) {
-            friendlyMsg = "Has alcanzado el límite de uso gratuito de la API. Por favor, espera unos minutos e inténtalo de nuevo.";
-        }
-
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-                chat_response: `[VEXT] ${friendlyMsg}`,
-                analysis: { grade: 0, grade_letter: "!", grade_explanation: "Límite de cuota alcanzado." },
-                landing_page: { headline: "Límite de Cuota", tailwind_html: currentHtml || "<!-- Safe -->" }
-            })
-        };
+        const result = await fetchGroq(systemPrompt, userContent, GROQ_API_KEY, GROQ_MODEL, maxTokens, isChat);
+        return { statusCode: 200, headers, body: JSON.stringify(result) };
 
     } catch (error) {
-        console.error('[VEXT] Fatal:', error.message);
-        return { statusCode: 500, headers, body: JSON.stringify({ error: error.message }) };
+        console.error('[VEXT] Fatal Error:', error.message);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+                error: 'Error en el servidor VEXT',
+                details: error.message,
+                chat_response: `[Error] No he podido procesar tu solicitud: ${error.message}`
+            })
+        };
     }
 };
 
-async function fetchGemini(sys, user, key, version, model, maxT, isChat) {
-    const url = `https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${key}`;
+async function fetchGroq(sys, user, key, model, maxT, isChat) {
+    const url = 'https://api.groq.com/openai/v1/chat/completions';
 
     const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`
+        },
         body: JSON.stringify({
-            contents: [{ parts: [{ text: `${sys}\n\n---\n\n${user}` }] }],
-            generationConfig: { temperature: 0.7, maxOutputTokens: maxT }
+            model: model,
+            messages: [
+                { role: 'system', content: sys },
+                { role: 'user', content: user }
+            ],
+            temperature: 0.7,
+            max_tokens: maxT,
+            response_format: isChat ? undefined : { type: 'json_object' }
         })
     });
 
     if (!response.ok) {
         const text = await response.text();
-        let msg = `Err ${response.status}`;
-        try {
-            const j = JSON.parse(text);
-            msg = j.error?.message || msg;
-        } catch (e) { }
-        throw new Error(msg);
+        console.error('[GROQ ERROR]', text);
+        throw new Error(`Groq API Error: ${response.status}`);
     }
 
     const data = await response.json();
-    const candidate = data.candidates?.[0];
-    if (!candidate) throw new Error('No candidates');
-    if (candidate.finishReason === 'SAFETY') throw new Error('Safety filter triggered');
+    const aiText = data.choices?.[0]?.message?.content;
 
-    const aiText = candidate.content?.parts?.[0]?.text;
-    if (!aiText) throw new Error('Empty AI response');
+    if (!aiText) throw new Error('Groq no devolvió texto');
 
     if (isChat) return { chat_response: aiText.trim() };
 
     try {
-        const jsonMatch = aiText.match(/```json\s*([\s\S]*?)\s*```/) || aiText.match(/```\s*([\s\S]*?)\s*```/);
-        const jsonStr = (jsonMatch ? jsonMatch[1] : aiText).trim();
-        return JSON.parse(jsonStr);
+        return JSON.parse(aiText);
     } catch (e) {
-        if (aiText.length < 500) return { chat_response: aiText };
-        throw new Error('Invalid JSON format');
+        // Fallback search for JSON in string
+        const jsonMatch = aiText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) return JSON.parse(jsonMatch[0]);
+        throw new Error('Formato JSON inválido de Groq');
     }
 }
