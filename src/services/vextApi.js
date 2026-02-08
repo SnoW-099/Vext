@@ -12,10 +12,14 @@ async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
     try {
         const response = await fetch(url, options);
 
-        // Retry on Gateway errors (502, 504)
-        if ((response.status === 502 || response.status === 504) && retries > 0) {
-            console.warn(`[VEXT API] Gateway error ${response.status}. Retrying... (${retries} left)`);
-            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (MAX_RETRIES - retries + 1)));
+        // Retry on Gateway errors (502, 504) or Rate Limits (429)
+        if ((response.status === 502 || response.status === 504 || response.status === 429) && retries > 0) {
+            const isRateLimit = response.status === 429;
+            const delay = isRateLimit ? RETRY_DELAY * 3 : RETRY_DELAY; // Wait more for rate limits
+
+            console.warn(`[VEXT API] ${isRateLimit ? 'Rate Limit' : 'Gateway'} error ${response.status}. Retrying in ${delay}ms... (${retries} left)`);
+
+            await new Promise(resolve => setTimeout(resolve, delay * (MAX_RETRIES - retries + 1)));
             return fetchWithRetry(url, options, retries - 1);
         }
 
