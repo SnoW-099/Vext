@@ -68,40 +68,38 @@ exports.handler = async (event) => {
             }`;
             userContent = `INSTRUCCIÓN DEL USUARIO: "${hypothesis}"\nCÓDIGO HTML ACTUAL: ${currentHtml}`;
         } else {
-            // Initial analysis - THE ARCHITECT PROMPT (Ultra Premium)
+            // Initial analysis - THE PRODUCTION ENGINE v3.0 (IMMACULATE DESIGN)
             systemPrompt += `
-            ACTÚA COMO UN DISEÑADOR WEB SENIOR DE SILICON VALLEY. 
-            Tu objetivo es crear una landing page "World Class" que enamore al usuario.
+            ACTÚA COMO UN SENIOR PRODUCT DESIGNER DE ELITE (ESTILO VERCEL/APPLE/LINEAR).
+            Tu misión es crear una Landing Page de impacto visual absoluto y conversión máxima.
             
-            REGLAS CRÍTICAS DE CALIDAD:
-            - TODO el contenido debe estar dentro de un contenedor <div class="bg-[#0a0a0a] min-h-screen text-white font-sans">.
-            - USA GRADIENTES: text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400.
-            - USA GLASSMORPHISM: bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl.
-            - IMÁGENES: Usa imágenes de alta calidad de Unsplash (ej: https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&q=80).
-            - SECCIONES OBLIGATORIAS:
-                1. Nav (Glassmorphism fixed).
-                2. Hero (Título gigante, Subtítulo elegante, Botón con sombra brillante).
-                3. Social Proof (Logos de empresas ficticias o "Trusted by 1000+ users").
-                4. Features Grid (3 columnas con iconos y borde sutil).
-                5. High-Conversion Pricing (3 planes, el central destacado con gradiente).
-                6. Footer (Elegant, dark).
+            DIRECCIÓN DE ARTE OBLIGATORIA:
+            1. ESPACIADO Y LAYOUT: Prohibido centrar todo en una columna estrecha. Usa secciones de ancho completo (max-w-7xl mx-auto px-6).
+            2. TIPOGRAFÍA MODERNA: Headlines masivos (text-6xl a text-8xl), tracking-tighter, y gradientes elegantes de blanco a gris plata.
+            3. IMÁGENES DE ALTO RENDIMIENTO: Usa Unsplash con IDs específicos para dar realismo.
+               - Ej: Tecnología/IA (photo-1677442136019-21780ecad995), Business (photo-1460925895917-afdab827c52f), Lifestyle (photo-1511367461989-f85a21fda167).
+            4. COMPONENTES DE ALTA FIDELIDAD:
+               - Bento Grids para mostrar características de forma moderna.
+               - Glassmorphism real: bg-white/5 backdrop-blur-xl border border-white/10.
+               - Micro-animaciones: hover:scale-[1.02] transition-transform.
+            5. ESTRUCTURA: Nav fixed (blur), Hero explosivo, Marquee de "Confianza", Grid de beneficios, Pricing Profesional, Footer minimalista.
             
-            ESTRUCTURA DEL JSON:
+            JSON OUTPUT STRICT:
             {
               "analysis": { 
                  "grade": 0-100, 
                  "grade_letter": "A", 
-                 "grade_explanation": "Explicación brillante...", 
-                 "target_audience": "Audiencia detallada...", 
-                 "psychology": [ { "trigger": "Urgencia", "explanation": "..." } ],
-                 "strategy": "Estrategia de crecimiento..." 
+                 "grade_explanation": "Crítica brutal, experta y directa...", 
+                 "target_audience": "Perfil detallado...", 
+                 "psychology": [ { "trigger": "...", "explanation": "..." } ],
+                 "strategy": "Plan de ejecución..." 
               },
               "landing_page": { 
-                 "headline": "Título Impactante", 
-                 "subheadline": "Subtítulo Persuasivo", 
-                 "tailwind_html": "<!-- Código HTML Profesional Aquí con Tailwind -->" 
+                 "headline": "...", 
+                 "subheadline": "...", 
+                 "tailwind_html": "<!-- Código HTML de Nivel Producción 2026 -->" 
               },
-              "viral_kit": { "hooks": ["Gancho 1"], "scripts": ["Script 1"] }
+              "viral_kit": { "hooks": ["Gancho Disruptivo"], "scripts": ["Guion Pro"] }
             }`;
         }
 

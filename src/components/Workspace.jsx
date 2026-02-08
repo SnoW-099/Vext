@@ -496,57 +496,17 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                     </button>
                 ) : (
                     <div className="preview-expanded">
-                        <div className="preview-controls">
-                            <div className="device-selector mono">
-                                <button
-                                    className={`device-btn ${previewDevice === 'mobile' ? 'active' : ''}`}
-                                    onClick={() => setPreviewDevice('mobile')}
-                                >
-                                    MOBILE
-                                </button>
-                                <button
-                                    className={`device-btn ${previewDevice === 'desktop' ? 'active' : ''}`}
-                                    onClick={() => setPreviewDevice('desktop')}
-                                >
-                                    DESKTOP
-                                </button>
-                            </div>
-                            <button className="preview-close" onClick={() => setPreviewExpanded(false)}>
-                                <X size={24} strokeWidth={1.5} />
-                            </button>
-                        </div>
+                        <button className="preview-close" onClick={() => setPreviewExpanded(false)}>
+                            <X size={24} strokeWidth={1.5} />
+                        </button>
 
-                        <div className={`preview-viewport ${previewDevice}`}>
-                            {previewDevice === 'mobile' ? (
-                                <div className="phone-frame-large">
-                                    <div className="phone-notch" />
-                                    <div className="phone-screen">
-                                        <iframe
-                                            srcDoc={data?.websitePreview?.html}
-                                            className="preview-iframe"
-                                            title="Landing Page Preview Mobile"
-                                            sandbox="allow-scripts"
-                                        />
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="desktop-frame">
-                                    <div className="browser-header">
-                                        <div className="browser-dots">
-                                            <span></span><span></span><span></span>
-                                        </div>
-                                        <div className="browser-address mono">{data?.websitePreview?.title?.toLowerCase().replace(/\s+/g, '-') + '.vext.ai'}</div>
-                                    </div>
-                                    <div className="browser-screen">
-                                        <iframe
-                                            srcDoc={data?.websitePreview?.html}
-                                            className="preview-iframe"
-                                            title="Landing Page Preview Desktop"
-                                            sandbox="allow-scripts"
-                                        />
-                                    </div>
-                                </div>
-                            )}
+                        <div className="preview-viewport">
+                            <iframe
+                                srcDoc={data?.websitePreview?.html}
+                                className="preview-iframe"
+                                title="Landing Page Preview"
+                                sandbox="allow-scripts"
+                            />
                         </div>
 
                         <button className="launch-btn">
