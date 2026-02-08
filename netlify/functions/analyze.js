@@ -1,4 +1,4 @@
-// VEXT Analysis Engine - QUOTA OPTIMIZED v9
+// VEXT Analysis Engine - PRODUCTION STABLE v10
 const PRIMARY_MODEL = 'gemini-2.0-flash';
 
 exports.handler = async (event) => {
@@ -11,7 +11,7 @@ exports.handler = async (event) => {
 
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
 
-    console.log('[VEXT] Global Execution v9');
+    console.log('[VEXT] Production Execution v10');
 
     try {
         let rawBody = event.body;
@@ -41,13 +41,12 @@ exports.handler = async (event) => {
             userContent = `INSTRUCCIÓN: "${hypothesis}"\nHTML: ${currentHtml}`;
         }
 
-        // --- QUOTA RESILIENT MATRIX (Using confirmed models from user list) ---
+        // --- RELIABLE MODEL MATRIX (2026 Stable) ---
         const configs = [
             { ver: 'v1beta', mod: 'gemini-2.0-flash' },
             { ver: 'v1beta', mod: 'gemini-2.0-flash-lite' },
-            { ver: 'v1beta', mod: 'gemini-1.5-flash-latest' },
-            { ver: 'v1beta', mod: 'gemini-flash-latest' },
-            { ver: 'v1beta', mod: 'gemini-1.5-pro' }
+            { ver: 'v1beta', mod: 'gemini-1.5-flash' },
+            { ver: 'v1', mod: 'gemini-1.5-flash' }
         ];
 
         let errors = [];
@@ -61,15 +60,15 @@ exports.handler = async (event) => {
             } catch (err) {
                 console.warn(`[VEXT] Skip ${config.mod}: ${err.message}`);
                 errors.push(`${config.mod}: ${err.message}`);
-                if (err.message.includes('quota')) quotaHit = true;
+                if (err.message.toLowerCase().includes('quota')) quotaHit = true;
                 if (err.message.includes('API_KEY')) break;
             }
         }
 
         // --- SMART FALLBACK ---
-        let friendlyMsg = "El motor de IA está saturado.";
+        let friendlyMsg = "El motor de IA está saturado temporalmente.";
         if (quotaHit) {
-            friendlyMsg = "Has alcanzado el límite de uso gratuito de Google Gemini. Por favor, espera un minuto o intenta con una descripción más corta.";
+            friendlyMsg = "Has alcanzado el límite de uso gratuito de la API. Por favor, espera unos minutos e inténtalo de nuevo.";
         }
 
         return {
@@ -78,7 +77,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({
                 chat_response: `[VEXT] ${friendlyMsg}`,
                 analysis: { grade: 0, grade_letter: "!", grade_explanation: "Límite de cuota alcanzado." },
-                landing_page: { headline: "Límite Alcanzado", tailwind_html: currentHtml || "<!-- Error -->" }
+                landing_page: { headline: "Límite de Cuota", tailwind_html: currentHtml || "<!-- Safe -->" }
             })
         };
 
@@ -113,10 +112,10 @@ async function fetchGemini(sys, user, key, version, model, maxT, isChat) {
     const data = await response.json();
     const candidate = data.candidates?.[0];
     if (!candidate) throw new Error('No candidates');
-    if (candidate.finishReason === 'SAFETY') throw new Error('Safety filter');
+    if (candidate.finishReason === 'SAFETY') throw new Error('Safety filter triggered');
 
     const aiText = candidate.content?.parts?.[0]?.text;
-    if (!aiText) throw new Error('No text');
+    if (!aiText) throw new Error('Empty AI response');
 
     if (isChat) return { chat_response: aiText.trim() };
 
