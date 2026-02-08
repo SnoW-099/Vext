@@ -47,13 +47,38 @@ exports.handler = async (event) => {
             3. "landing_page": Objeto con el nuevo "tailwind_html".`;
             userContent = `Instrucción: "${hypothesis}"\nCódigo HTML actual: ${currentHtml}`;
         } else {
-            // Initial analysis prompt
+            // Initial analysis prompt - STRENGTHENED
             systemPrompt += `
-            Estructura del JSON:
+            DEBES GENERAR UNA LANDING PAGE COMPLETA Y PROFESIONAL.
+            
+            REGLAS DE DISEÑO:
+            - Usa Tailwind CSS.
+            - Estilo: Moderno, Minimalista, Apple-like.
+            - Colores: Fondo oscuro (#0a0a0a) con acentos vibrantes.
+            - Secciones: Hero con CTA, Características, Prueba Social, Precios, Footer.
+            - Imágenes: Usa <img src="https://images.unsplash.com/photo-..." alt="...">.
+            - Interactividad: Usa efectos hover de Tailwind.
+            
+            ESTRUCTURA OBLIGATORIA DEL JSON:
             {
-              "analysis": { "grade": 0-100, "grade_letter": "A", "grade_explanation": "...", "target_audience": "...", "psychology": [], "strategy": "..." },
-              "landing_page": { "valentine_code": "...", "headline": "...", "subheadline": "...", "tailwind_html": "..." },
-              "viral_kit": { "hooks": [], "scripts": [] }
+              "analysis": { 
+                "grade": 0-100, 
+                "grade_letter": "A", 
+                "grade_explanation": "...", 
+                "target_audience": "...", 
+                "psychology": [ { "trigger": "...", "explanation": "..." } ], 
+                "strategy": "..." 
+              },
+              "landing_page": { 
+                "valentine_code": "VEXT-2026", 
+                "headline": "...", 
+                "subheadline": "...", 
+                "tailwind_html": "<div class='min-h-screen bg-black text-white'>... código completo aquí ...</div>" 
+              },
+              "viral_kit": { 
+                "hooks": ["Gancho 1", "Gancho 2"], 
+                "scripts": ["Guion 1", "Guion 2"] 
+              }
             }`;
         }
 
