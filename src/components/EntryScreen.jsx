@@ -48,9 +48,11 @@ function EntryScreen({ onScan }) {
     }, [charIndex, isDeleting, exampleIndex]);
 
     const handleSubmit = (e) => {
-        e.preventDefault()
+        if (e && typeof e.preventDefault === 'function') {
+            e.preventDefault();
+        }
         if (hypothesis.trim()) {
-            onScan(hypothesis.trim())
+            onScan(hypothesis.trim());
         }
     }
 
@@ -88,8 +90,9 @@ function EntryScreen({ onScan }) {
                             value={hypothesis}
                             onChange={(e) => setHypothesis(e.target.value)}
                             onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    handleSubmit(e);
+                                if (e && e.key === 'Enter' && !e.shiftKey) {
+                                    if (typeof e.preventDefault === 'function') e.preventDefault();
+                                    handleSubmit();
                                 }
                             }}
                         />

@@ -371,7 +371,12 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                             placeholder="Refine your strategy (e.g., 'Make it blue', 'Target gen-z')..."
                             value={chatInput}
                             onChange={(e) => setChatInput(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleRefine()}
+                            onKeyDown={(e) => {
+                                if (e && e.key === 'Enter') {
+                                    if (typeof e.preventDefault === 'function') e.preventDefault();
+                                    handleRefine();
+                                }
+                            }}
                             disabled={isRefining}
                         />
                         <button className="chat-send-btn" onClick={handleRefine} disabled={isRefining}>
