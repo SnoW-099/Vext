@@ -47,38 +47,40 @@ exports.handler = async (event) => {
             3. "landing_page": Objeto con el nuevo "tailwind_html".`;
             userContent = `Instrucción: "${hypothesis}"\nCódigo HTML actual: ${currentHtml}`;
         } else {
-            // Initial analysis prompt - STRENGTHENED
+            // Initial analysis - THE ARCHITECT PROMPT (Ultra Premium)
             systemPrompt += `
-            DEBES GENERAR UNA LANDING PAGE COMPLETA Y PROFESIONAL.
+            ACTÚA COMO UN DISEÑADOR WEB SENIOR DE SILICON VALLEY. 
+            Tu objetivo es crear una landing page "World Class" que enamore al usuario.
             
-            REGLAS DE DISEÑO:
-            - Usa Tailwind CSS.
-            - Estilo: Moderno, Minimalista, Apple-like.
-            - Colores: Fondo oscuro (#0a0a0a) con acentos vibrantes.
-            - Secciones: Hero con CTA, Características, Prueba Social, Precios, Footer.
-            - Imágenes: Usa <img src="https://images.unsplash.com/photo-..." alt="...">.
-            - Interactividad: Usa efectos hover de Tailwind.
+            REGLAS CRÍTICAS DE CALIDAD:
+            - TODO el contenido debe estar dentro de un contenedor <div class="bg-[#0a0a0a] min-h-screen text-white font-sans">.
+            - USA GRADIENTES: text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400.
+            - USA GLASSMORPHISM: bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl.
+            - IMÁGENES: Usa imágenes de alta calidad de Unsplash (ej: https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&q=80).
+            - SECCIONES OBLIGATORIAS:
+                1. Nav (Glassmorphism fixed).
+                2. Hero (Título gigante, Subtítulo elegante, Botón con sombra brillante).
+                3. Social Proof (Logos de empresas ficticias o "Trusted by 1000+ users").
+                4. Features Grid (3 columnas con iconos y borde sutil).
+                5. High-Conversion Pricing (3 planes, el central destacado con gradiente).
+                6. Footer (Elegant, dark).
             
-            ESTRUCTURA OBLIGATORIA DEL JSON:
+            ESTRUCTURA DEL JSON:
             {
               "analysis": { 
-                "grade": 0-100, 
-                "grade_letter": "A", 
-                "grade_explanation": "...", 
-                "target_audience": "...", 
-                "psychology": [ { "trigger": "...", "explanation": "..." } ], 
-                "strategy": "..." 
+                 "grade": 0-100, 
+                 "grade_letter": "A", 
+                 "grade_explanation": "Explicación brillante...", 
+                 "target_audience": "Audiencia detallada...", 
+                 "psychology": [ { "trigger": "Urgencia", "explanation": "..." } ],
+                 "strategy": "Estrategia de crecimiento..." 
               },
               "landing_page": { 
-                "valentine_code": "VEXT-2026", 
-                "headline": "...", 
-                "subheadline": "...", 
-                "tailwind_html": "<div class='min-h-screen bg-black text-white'>... código completo aquí ...</div>" 
+                 "headline": "Título Impactante", 
+                 "subheadline": "Subtítulo Persuasivo", 
+                 "tailwind_html": "<!-- Código HTML Profesional Aquí con Tailwind -->" 
               },
-              "viral_kit": { 
-                "hooks": ["Gancho 1", "Gancho 2"], 
-                "scripts": ["Guion 1", "Guion 2"] 
-              }
+              "viral_kit": { "hooks": ["Gancho 1"], "scripts": ["Script 1"] }
             }`;
         }
 

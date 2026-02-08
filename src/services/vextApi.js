@@ -237,31 +237,59 @@ export function getMockAnalysis(hypothesis) {
 }
 
 function injectPreviewStyles(html) {
+    // If the input is just a snippet, wrap it in a full HTML structure
+    let fullHtml = html;
+    if (!html.includes('<head>')) {
+        fullHtml = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0a0a0a] text-white">
+    ${html}
+</body>
+</html>`;
+    } else if (!html.includes('https://cdn.tailwindcss.com')) {
+        // If it has head but no tailwind, inject tailwind
+        fullHtml = html.replace('<head>', '<head><script src="https://cdn.tailwindcss.com"></script>');
+    }
+
     const styles = `
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #444; }
-        body { overflow-x: hidden; scroll-behavior: smooth; }
+        body { overflow-x: hidden; scroll-behavior: smooth; margin: 0; padding: 0; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
     </style>
     <script>
         document.addEventListener('click', function(e) {
             const link = e.target.closest('a');
             if (link) {
-                e.preventDefault();
                 const href = link.getAttribute('href');
                 if (href && href.startsWith('#')) {
+                    e.preventDefault();
                     const target = document.querySelector(href);
                     if (target) target.scrollIntoView({ behavior: 'smooth' });
                 } else {
-                    alert('Link disabled in preview mode.');
+                    e.preventDefault();
+                    console.log('Link disabled in preview mode.');
                 }
             }
         });
     </script>
     `;
-    return html.replace('</head>', `${styles}</head>`);
+
+    if (fullHtml.includes('</head>')) {
+        return fullHtml.replace('</head>', `${styles}</head>`);
+    }
+    return fullHtml + styles;
 }
 
 function calculateGradeLetter(score) {
