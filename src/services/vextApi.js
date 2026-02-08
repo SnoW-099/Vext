@@ -92,7 +92,7 @@ function getGradeExplanation(score) {
     return "Existen fallos críticos en la viabilidad o ejecución. El mercado podría estar saturado o la demanda ser insuficiente.";
 }
 
-export async function refineHypothesis(currentHtml, instruction, context) {
+export async function refineHypothesis(currentHtml, instruction, context, history = []) {
     console.log('[VEXT API] Refining...', { instruction });
     const url = `${API_BASE}/.netlify/functions/analyze`;
 
@@ -103,15 +103,13 @@ export async function refineHypothesis(currentHtml, instruction, context) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+            instruction: instruction, // Some versions might expect instruction instead of hypothesis
             hypothesis: instruction,
             mode: 'refine',
-            // OPTIMIZATION: If it's just chat, don't send the heavy HTML context to the LLM
-            currentHtml: looksConversational ? "" : currentHtml,
+            currentHtml: currentHtml, // ALWAYS send HTML to maintain state
             context,
-            is_chat_only: looksConversational,
-            system_prompt_addon: looksConversational
-                ? "EXTREME SPEED MODE: User is just chatting. DO NOT analyze code. DO NOT return landing_page. Return ONLY a concise chat_response. No JSON bloat."
-                : "OPTIMIZED GENERATION: Only change what is requested. Keep HTML concise."
+            history: history.slice(-6), // Send last 6 messages for context memory
+            is_chat_only: false // Disable conversational mode to force reasoning over code
         })
     });
 

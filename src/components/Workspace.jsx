@@ -106,7 +106,8 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
             const refinedData = await refineHypothesis(
                 data.websitePreview.html,
                 userMsg.content,
-                context
+                context,
+                chatHistory
             );
 
             // Update Workspace Data
@@ -497,21 +498,30 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                 ) : (
                     <div className="preview-expanded">
                         <button className="preview-close" onClick={() => setPreviewExpanded(false)}>
-                            <X size={24} strokeWidth={1.5} />
+                            <X size={32} strokeWidth={1} />
                         </button>
 
                         <div className="preview-viewport">
-                            <iframe
-                                srcDoc={data?.websitePreview?.html}
-                                className="preview-iframe"
-                                title="Landing Page Preview"
-                                sandbox="allow-scripts"
-                            />
+                            <div className="phone-frame-ultra">
+                                <div className="phone-header">
+                                    <div className="phone-speaker" />
+                                    <div className="phone-sensors" />
+                                </div>
+                                <div className="phone-screen">
+                                    <iframe
+                                        srcDoc={data?.websitePreview?.html}
+                                        className="preview-iframe"
+                                        title="Landing Page Preview"
+                                        sandbox="allow-scripts"
+                                    />
+                                </div>
+                                <div className="phone-home-indicator" />
+                            </div>
                         </div>
 
-                        <button className="launch-btn">
-                            <Zap size={18} />
-                            <span>VEXT LAUNCH — 9€</span>
+                        <button className="launch-btn ultra">
+                            <Zap size={20} />
+                            <span>LAUNCH PROJECT — 9€</span>
                         </button>
                     </div>
                 )}

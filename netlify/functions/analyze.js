@@ -39,54 +39,60 @@ exports.handler = async (event) => {
             userContent = `Mensaje del usuario: "${hypothesis}"`;
             maxTokens = 800;
         } else if (mode === 'refine') {
+            const history = body.history || [];
+            const historyText = history.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
             const gradeVal = userContext.gradePercent || 50;
-            systemPrompt = `ACTÚA COMO UN ARQUITECTO DE NEGOCIOS CÍNICO Y EXIGENTE. 
-            Tu misión es refinar la landing page basándote en las instrucciones del usuario, pero manteniendo un estándar de calidad brutal.
+
+            systemPrompt = `Eres VEXT, un Arquitecto de Producto Senior con memoria impecable.
+            Tu misión es EVOLUCIONAR la landing page basándote en el historial y la nueva instrucción.
             
-            REGLAS ABSOLUTAS:
-            1. RESPONDE ÚNICAMENTE CON UN OBJETO JSON VÁLIDO.
-            2. Si piden "quitar algo", elimínalo del código HTML de forma limpia.
-            3. Si piden cambios de diseño, usa Tailwind CSS profesional (Glassmorphism, gradientes, espaciado perfecto).
-            4. El "chat_response" debe ser breve, inteligente y un poco arrogante/directo (estilo VEXT).
+            CONTEXTO DE MEMORIA:
+            ${historyText}
+            
+            REGLAS DE REFINAMIENTO:
+            1. RAZONAMIENTO: Antes de cambiar el código, analiza qué pidió el usuario antes y qué pide ahora.
+            2. CONSISTENCIA: Mantén el estilo visual (colores, fuentes) a menos que te pidan cambiarlo.
+            3. LIMPIEZA: Si te piden quitar algo, bórralo del HTML. Si piden añadir, intégralo orgánicamente.
+            4. CHAT: En "chat_response", explica brevemente por qué has tomado ciertas decisiones de diseño.
             
             ESTRUCTURA DEL JSON:
             {
-              "chat_response": "Explicación breve de lo que has hecho...",
+              "chat_response": "Razonamiento y explicación de los cambios...",
               "analysis": { 
                  "grade": ${gradeVal}, 
                  "grade_letter": "A", 
-                 "grade_explanation": "Tu análisis sutil aquí...",
+                 "grade_explanation": "Análisis de la evolución...",
                  "target_audience": "${userContext.targeting || 'Audiencia ideal'}",
                  "psychology": [ { "trigger": "...", "explanation": "..." } ],
-                 "strategy": "Estrategia de crecimiento..."
+                 "strategy": "Siguiente paso estratégico..."
               },
               "landing_page": { 
                  "headline": "${userContext.title || 'Título'}", 
                  "subheadline": "${userContext.tagline || 'Subtítulo'}", 
-                 "tailwind_html": "<!-- Código HTML modificado con Tailwind -->" 
+                 "tailwind_html": "<!-- Código HTML REFINADO aquí -->" 
               }
             }`;
-            userContent = `INSTRUCCIÓN DEL USUARIO: "${hypothesis}"\nCÓDIGO HTML ACTUAL: ${currentHtml}`;
+            userContent = `NUEVA INSTRUCCIÓN: "${hypothesis}"\nCÓDIGO HTML ACTUAL: ${currentHtml}`;
         } else {
-            // Initial analysis - THE PRODUCTION ENGINE v3.1 (STABLE & RESPONSIVE)
-            systemPrompt += `
-            ACTÚA COMO UN SENIOR UI/UX ENGINEER. Tu objetivo es una web impecable y RESPONSIVA.
+            // Initial analysis - THE PRODUCTION ENGINE v4.0 (FORCE FULL GENERATION)
+            systemPrompt = `Eres un Desarrollador Web Senior experto en Tailwind CSS y Conversión.
+            Tu misión es entregar una Landing Page COMPLETA, PROFESIONAL y FUNCIONAL desde el primer análisis. 
+            No puedes fallar. No puedes ser perezoso. DEBES incluir el tailwind_html completo.
             
-            REGLAS DE ORO DE DISEÑO (PROXIMIDAD Y ESCALA):
-            1. TIPOGRAFÍA RESPONSIVA: Usa clases como "text-4xl md:text-7xl". NUNCA uses text-7xl fijo (rompe en móvil). Usa "leading-tight" y "tracking-tighter".
-            2. NAVEGACIÓN LIMPIA: El Nav debe ser simple. Evita que ocupe demasiado espacio o tape el texto. Usa "sticky top-0 z-50 bg-black/50 backdrop-blur-lg".
-            3. IMÁGENES QUE CARGAN: Usa IDs de Unsplash variados. Usa "w-full aspect-video object-cover rounded-2xl" para que se vean bien.
-            4. BENTO GRIDS INTELIGENTES: En móvil usa "grid-cols-1", en desktop "md:grid-cols-3". 
-            5. ESPACIADO: Usa "px-6" para móvil y "md:px-12" para desktop. No dejes que el texto toque los bordes.
+            REGLAS TÉCNICAS INNEGOCIABLES:
+            1. HTML COMPLETO: Genera el código HTML íntegro (Header, Hero, Features, Pricing, Testimonials, Footer).
+            2. TAILWIND RESPONSIVO: Usa clases móviles (default) y desktop (md:). Ej: text-3xl md:text-6xl.
+            3. IMÁGENES: Usa IDs reales de Unsplash para el sector del negocio.
+            4. SIN PLACEHOLDERS: Escribe el código real de todas las secciones.
             
-            ESTILO VISUAL: Minimalismo técnico. Mucho espacio negativo, bordes muy finos (border-white/5), tipografía Sans (Inter).
+            ESTILO: Oscuro, Elegante, Minimalista (Vercel/Apple).
             
-            JSON OUTPUT STRICT:
+            RESPONDE ÚNICAMENTE CON ESTE JSON:
             {
               "analysis": { 
                  "grade": 0-100, 
                  "grade_letter": "A", 
-                 "grade_explanation": "Análisis experto...", 
+                 "grade_explanation": "Tu análisis cínico y realista...", 
                  "target_audience": "...", 
                  "psychology": [ { "trigger": "...", "explanation": "..." } ],
                  "strategy": "..." 
@@ -94,13 +100,13 @@ exports.handler = async (event) => {
               "landing_page": { 
                  "headline": "...", 
                  "subheadline": "...", 
-                 "tailwind_html": "<!-- Código HTML PROFESIONAL, RESPONSIVO y SIN ERRORES DE DISEÑO -->" 
+                 "tailwind_html": "<!-- Aquí el HTML completo con Tailwind -->" 
               },
               "viral_kit": { "hooks": [], "scripts": [] }
             }`;
         }
 
-        const result = await fetchGroq(systemPrompt, userContent, GROQ_API_KEY, GROQ_MODEL, maxTokens, isChat);
+        const result = await fetchGroq(systemPrompt, userContent, GROQ_API_KEY, GROQ_MODEL, 8000, isChat);
         return { statusCode: 200, headers, body: JSON.stringify(result) };
 
     } catch (error) {
