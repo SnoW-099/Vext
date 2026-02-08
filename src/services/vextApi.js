@@ -58,7 +58,7 @@ export async function analyzeHypothesis(hypothesis) {
         gradeExplanation: data.analysis?.grade_explanation || getGradeExplanation(data.analysis?.grade),
         strategy: data.analysis?.strategy || "Proyecto analizado. Listo para refinar.",
         targeting: data.analysis?.target_audience || 'Audiencia no definida.',
-        psychology: data.analysis?.psychology?.map(p => p.trigger) || [],
+        psychology: data.analysis?.psychology?.map(p => typeof p === 'string' ? p : p.trigger) || [],
         psychologyDetails: data.analysis?.psychology || [],
         websitePreview: {
             title: data.landing_page?.headline || hypothesis.slice(0, 50),

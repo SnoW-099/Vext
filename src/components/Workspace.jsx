@@ -257,7 +257,7 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                                         <div key={i} className="trigger-item-detailed">
                                             <div className="trigger-header">
                                                 <span className="trigger-dot" />
-                                                <span className="trigger-name">{typeof item === 'string' ? item : item.trigger}</span>
+                                                <span className="trigger-name">{typeof item === 'string' ? item : (item?.trigger || 'Trigger')}</span>
                                             </div>
                                             {item.explanation && (
                                                 <p className="trigger-explanation">{item.explanation}</p>
@@ -425,7 +425,7 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
                         <span className="section-label mono">PSYCHOLOGY TRIGGERS</span>
                         <div className="triggers-grid">
                             {data?.psychology?.map((item, i) => {
-                                const triggerText = typeof item === 'string' ? item : item.trigger;
+                                const triggerText = typeof item === 'string' ? item : (item?.trigger || 'Trigger');
                                 return (
                                     <div key={i} className="trigger-item">
                                         <span className="trigger-dot" />
