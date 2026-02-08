@@ -1,5 +1,5 @@
-// VEXT Analysis Engine - 2026 FRONTIER v8
-const PRIMARY_MODEL = 'gemini-2.5-flash';
+// VEXT Analysis Engine - QUOTA OPTIMIZED v9
+const PRIMARY_MODEL = 'gemini-2.0-flash';
 
 exports.handler = async (event) => {
     const headers = {
@@ -11,7 +11,7 @@ exports.handler = async (event) => {
 
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
 
-    console.log('[VEXT] Global Execution v8');
+    console.log('[VEXT] Global Execution v9');
 
     try {
         let rawBody = event.body;
@@ -41,45 +41,44 @@ exports.handler = async (event) => {
             userContent = `INSTRUCCIÓN: "${hypothesis}"\nHTML: ${currentHtml}`;
         }
 
-        // --- 2026 MODEL MATRIX ---
+        // --- QUOTA RESILIENT MATRIX (Using confirmed models from user list) ---
         const configs = [
-            { ver: 'v1beta', mod: 'gemini-2.5-flash' },
-            { ver: 'v1beta', mod: 'gemini-2.5-pro' },
-            { ver: 'v1beta', mod: 'gemini-3-flash-preview' },
-            { ver: 'v1beta', mod: 'gemini-1.5-flash' }, // Legacy fallback
-            { ver: 'v1', mod: 'gemini-1.5-flash' }  // Ultra-Legacy
+            { ver: 'v1beta', mod: 'gemini-2.0-flash' },
+            { ver: 'v1beta', mod: 'gemini-2.0-flash-lite' },
+            { ver: 'v1beta', mod: 'gemini-1.5-flash-latest' },
+            { ver: 'v1beta', mod: 'gemini-flash-latest' },
+            { ver: 'v1beta', mod: 'gemini-1.5-pro' }
         ];
 
         let errors = [];
+        let quotaHit = false;
 
         for (const config of configs) {
             try {
-                console.log(`[VEXT] Attempting ${config.mod} (${config.ver})`);
+                console.log(`[VEXT] Attempting ${config.mod}`);
                 const result = await fetchGemini(systemPrompt, userContent, GEMINI_API_KEY, config.ver, config.mod, maxTokens, isChat);
                 return { statusCode: 200, headers, body: JSON.stringify(result) };
             } catch (err) {
                 console.warn(`[VEXT] Skip ${config.mod}: ${err.message}`);
-                errors.push(`${config.mod}: ${err.message.slice(0, 50)}`);
+                errors.push(`${config.mod}: ${err.message}`);
+                if (err.message.includes('quota')) quotaHit = true;
                 if (err.message.includes('API_KEY')) break;
             }
         }
 
-        // --- EMERGENCY DIAGNOSTIC ---
-        let availableModels = "Unknown";
-        try {
-            const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`;
-            const listRes = await fetch(listUrl);
-            const listData = await listRes.json();
-            availableModels = listData.models?.map(m => m.name.split('/').pop()).join(', ') || "NoneFound";
-        } catch (e) { availableModels = "ErrorListingModels"; }
+        // --- SMART FALLBACK ---
+        let friendlyMsg = "El motor de IA está saturado.";
+        if (quotaHit) {
+            friendlyMsg = "Has alcanzado el límite de uso gratuito de Google Gemini. Por favor, espera un minuto o intenta con una descripción más corta.";
+        }
 
         return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
-                chat_response: `[VEXT] Error de Modelos. Intentados: ${errors.join(' | ')}. Tu cuenta dispone de: ${availableModels}.`,
-                analysis: { grade: 0, grade_letter: "F", grade_explanation: "Fallo de sincronización de modelos." },
-                landing_page: { headline: "Config Error", tailwind_html: currentHtml || "<!-- Error -->" }
+                chat_response: `[VEXT] ${friendlyMsg}`,
+                analysis: { grade: 0, grade_letter: "!", grade_explanation: "Límite de cuota alcanzado." },
+                landing_page: { headline: "Límite Alcanzado", tailwind_html: currentHtml || "<!-- Error -->" }
             })
         };
 
