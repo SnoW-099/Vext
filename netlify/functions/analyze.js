@@ -40,12 +40,33 @@ exports.handler = async (event) => {
             maxTokens = 800;
         } else if (mode === 'refine') {
             const gradeVal = userContext.gradePercent || 50;
-            systemPrompt = `Eres VEXT. Tu tarea es modificar el código HTML de la landing page según las instrucciones.
-            RESPONDE ÚNICAMENTE CON UN OBJETO JSON que incluya:
-            1. "chat_response": Explicación breve del cambio.
-            2. "analysis": Objeto con el análisis actualizado (grade: ${gradeVal}).
-            3. "landing_page": Objeto con el nuevo "tailwind_html".`;
-            userContent = `Instrucción: "${hypothesis}"\nCódigo HTML actual: ${currentHtml}`;
+            systemPrompt = `ACTÚA COMO UN ARQUITECTO DE NEGOCIOS CÍNICO Y EXIGENTE. 
+            Tu misión es refinar la landing page basándote en las instrucciones del usuario, pero manteniendo un estándar de calidad brutal.
+            
+            REGLAS ABSOLUTAS:
+            1. RESPONDE ÚNICAMENTE CON UN OBJETO JSON VÁLIDO.
+            2. Si piden "quitar algo", elimínalo del código HTML de forma limpia.
+            3. Si piden cambios de diseño, usa Tailwind CSS profesional (Glassmorphism, gradientes, espaciado perfecto).
+            4. El "chat_response" debe ser breve, inteligente y un poco arrogante/directo (estilo VEXT).
+            
+            ESTRUCTURA DEL JSON:
+            {
+              "chat_response": "Explicación breve de lo que has hecho...",
+              "analysis": { 
+                 "grade": ${gradeVal}, 
+                 "grade_letter": "A", 
+                 "grade_explanation": "Tu análisis sutil aquí...",
+                 "target_audience": "${userContext.targeting || 'Audiencia ideal'}",
+                 "psychology": [ { "trigger": "...", "explanation": "..." } ],
+                 "strategy": "Estrategia de crecimiento..."
+              },
+              "landing_page": { 
+                 "headline": "${userContext.title || 'Título'}", 
+                 "subheadline": "${userContext.tagline || 'Subtítulo'}", 
+                 "tailwind_html": "<!-- Código HTML modificado con Tailwind -->" 
+              }
+            }`;
+            userContent = `INSTRUCCIÓN DEL USUARIO: "${hypothesis}"\nCÓDIGO HTML ACTUAL: ${currentHtml}`;
         } else {
             // Initial analysis - THE ARCHITECT PROMPT (Ultra Premium)
             systemPrompt += `

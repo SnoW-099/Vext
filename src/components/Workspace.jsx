@@ -94,10 +94,12 @@ function Workspace({ hypothesis, data: initialData, onReset, currentProject }) {
 
         try {
             const context = {
-                grade: data.grade,
-                gradePercent: data.gradePercent,
-                title: data.websitePreview.title,
-                tagline: data.websitePreview.tagline
+                grade: data?.grade,
+                gradePercent: data?.gradePercent,
+                title: data?.websitePreview?.title || '',
+                tagline: data?.websitePreview?.tagline || '',
+                targeting: data?.targeting || '',
+                websitePreview: data?.websitePreview
             };
 
             const refinedData = await refineHypothesis(
