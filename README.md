@@ -1,16 +1,50 @@
-# React + Vite
+# VEXT 🚀
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**VEXT** is an AI-powered product architect designed to transform business ideas into premium, high-converting landing pages in seconds.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-   **AI Strategy Engine**: Instantly analyzes business viability and defines target audiences.
+-   **Immaculate Design**: Generates production-ready landing pages with Vercel/Apple aesthetics using Tailwind CSS.
+-   **Live Refinement**: Interactive chat interface to polish design and strategy in real-time.
+-   **Mobile-First Preview**: High-fidelity device simulation to ensure perfect responsive design.
+-   **Viral Kit**: Automatically generates marketing hooks and social media scripts.
 
-## React Compiler
+## 🛠 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+-   **Frontend**: React + Vite
+-   **Styling**: Tailwind CSS
+-   **Backend**: Netlify Functions (Serverless)
+-   **AI Intelligence**: Groq API (Llama 3 / Mixtral)
+-   **Icons**: Lucide React
 
-## Expanding the ESLint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/SnoW-099/Vext.git
+    ```
+
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+
+3.  **Set up environment variables**:
+    Create a `.env` file in the root and add your Groq API Key:
+    ```env
+    GROQ_API_KEY=your_key_here
+    ```
+
+4.  **Run locally**:
+    ```bash
+    npm run dev
+    ```
+
+## 🌐 Deployment
+
+This project is optimized for deployment on **Netlify**. Ensure the `GROQ_API_KEY` environment variable is set in the Netlify dashboard.
+
+---
+
+Made with 💎 by [SnoW-099](https://github.com/SnoW-099)
